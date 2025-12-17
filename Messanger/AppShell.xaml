@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="Messanger.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:Messanger.Views">
+
+    <!-- Menüpunkt: Login -->
+    <FlyoutItem Title="Login" Route="LoginPage">
+        <ShellContent
+      Title="Login"
+      ContentTemplate="{DataTemplate views:LoginPage}" />
+    </FlyoutItem>
+
+    <!-- Menüpunkt: Startseite -->
+    <FlyoutItem Title="Start" Route="MainPage">
+        <ShellContent
+      Title="Start"
+      ContentTemplate="{DataTemplate views:MainPage}" />
+    </FlyoutItem>
+
+    <!-- Menüpunkt: Freunde -->
+    <FlyoutItem Title="Freunde" Route="FriendsPage">
+        <ShellContent
+      Title="Freunde"
+      ContentTemplate="{DataTemplate views:FriendsPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Registrierung" Route="RegistrationPage">
+        <ShellContent
+      Title="Registrierung"
+      ContentTemplate="{DataTemplate views:RegistrationPage}" />
+    </FlyoutItem>
+
+</Shell>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Messanger.Views.FriendsPage"
+             Title="Freunde">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <Label Text="Freunde verwalten"
+                   FontSize="24"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,10" />
+
+            <!-- Suchbereich -->
+            <Label Text="Freunde suchen" FontSize="18" FontAttributes="Bold" />
+            <Entry Placeholder="Username oder Key eingeben"
+                   Text="{Binding SearchQuery}" />
+            <Button Text="Suchen"
+                    Command="{Binding SearchCommand}" />
+
+            <!-- Suchergebnisse -->
+            <Label Text="Suchergebnisse:"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   Margin="0,10,0,0"
+                   IsVisible="{Binding HasSearchResults}" />
+
+            <CollectionView ItemsSource="{Binding SearchResults}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="10" Margin="0,5" BorderColor="LightGray">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout Grid.Column="0">
+                                    <Label Text="{Binding Username}"
+                                           FontSize="16"
+                                           FontAttributes="Bold" />
+                                    <Label Text="{Binding Key}"
+                                           FontSize="14"
+                                           TextColor="Gray" />
+                                    <Label Text="{Binding Email}"
+                                           FontSize="12"
+                                           TextColor="Gray" />
+                                </VerticalStackLayout>
+                                <Button Grid.Column="1"
+                                        Text="Anfrage senden"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SendRequestCommand}"
+                                        CommandParameter="{Binding .}"
+                                        VerticalOptions="Center" />
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Meine Freunde -->
+            <Label Text="Meine Freunde:"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   Margin="0,20,0,0" />
+
+            <Button Text="Freunde laden"
+                    Command="{Binding LoadFriendsCommand}"
+                    Margin="0,0,0,10" />
+
+            <CollectionView ItemsSource="{Binding Friends}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="10" Margin="0,5" BorderColor="LightBlue">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Username}"
+                                       FontSize="16"
+                                       FontAttributes="Bold" />
+                                <Label Text="{Binding Key}"
+                                       FontSize="14"
+                                       TextColor="Gray" />
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Offene Anfragen -->
+            <Label Text="Offene Anfragen:"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   Margin="0,20,0,0" />
+
+            <Button Text="Anfragen laden"
+                    Command="{Binding LoadPendingRequestsCommand}"
+                    Margin="0,0,0,10" />
+
+            <Label Text="{Binding Message}"
+                   TextColor="Blue"
+                   Margin="0,10" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
