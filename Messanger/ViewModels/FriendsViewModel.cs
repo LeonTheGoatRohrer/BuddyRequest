@@ -15,6 +15,7 @@ namespace Messanger.ViewModels
         private string searchQuery;
         private ObservableCollection<User> searchResults;
         private ObservableCollection<User> friends;
+        private ObservableCollection<FriendRequestWithUser> pendingRequests;
         private string message;
         private bool isBusy;
 
@@ -28,11 +29,16 @@ namespace Messanger.ViewModels
 
             SearchResults = new ObservableCollection<User>();
             Friends = new ObservableCollection<User>();
+            PendingRequests = new ObservableCollection<FriendRequestWithUser>();
 
             SearchCommand = new Command(async () => await SearchAsync());
+            ShowAllUsersCommand = new Command(async () => await ShowAllUsersAsync());
             SendRequestCommand = new Command<User>(async (user) => await SendRequestAsync(user));
             LoadFriendsCommand = new Command(async () => await LoadFriendsAsync());
             LoadPendingRequestsCommand = new Command(async () => await LoadPendingRequestsAsync());
+            AcceptRequestCommand = new Command<FriendRequestWithUser>(async (request) => await AcceptRequestAsync(request));
+            DeclineRequestCommand = new Command<FriendRequestWithUser>(async (request) => await DeclineRequestAsync(request));
+            OpenChatCommand = new Command<User>(async (friend) => await OpenChatAsync(friend));
 
             if (UserSession.IsLoggedIn)
             {
@@ -40,7 +46,7 @@ namespace Messanger.ViewModels
             }
             else
             {
-                Message = "?? Nicht eingeloggt! Bitte zuerst anmelden.";
+                Message = "Nicht eingeloggt! Bitte zuerst anmelden.";
             }
             
             System.Diagnostics.Debug.WriteLine($"[FriendsViewModel] Initialized with currentUserId = {UserSession.CurrentUserId}");
@@ -80,6 +86,18 @@ namespace Messanger.ViewModels
             }
         }
 
+        public ObservableCollection<FriendRequestWithUser> PendingRequests
+        {
+            get => pendingRequests;
+            set
+            {
+                if (pendingRequests == value) return;
+                pendingRequests = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasPendingRequests));
+            }
+        }
+
         public string Message
         {
             get => message;
@@ -103,11 +121,16 @@ namespace Messanger.ViewModels
         }
 
         public bool HasSearchResults => SearchResults != null && SearchResults.Count > 0;
+        public bool HasPendingRequests => PendingRequests != null && PendingRequests.Count > 0;
 
         public ICommand SearchCommand { get; }
+        public ICommand ShowAllUsersCommand { get; }
         public ICommand SendRequestCommand { get; }
         public ICommand LoadFriendsCommand { get; }
         public ICommand LoadPendingRequestsCommand { get; }
+        public ICommand AcceptRequestCommand { get; }
+        public ICommand DeclineRequestCommand { get; }
+        public ICommand OpenChatCommand { get; }
 
         private async Task SearchAsync()
         {
@@ -119,7 +142,7 @@ namespace Messanger.ViewModels
 
             if (!UserSession.IsLoggedIn)
             {
-                Message = "?? Bitte zuerst anmelden!";
+                Message = "Bitte zuerst anmelden!";
                 return;
             }
 
@@ -160,14 +183,14 @@ namespace Messanger.ViewModels
 
             if (!UserSession.IsLoggedIn)
             {
-                Message = "?? Bitte zuerst anmelden!";
+                Message = "Bitte zuerst anmelden!";
                 return;
             }
 
             try
             {
                 IsBusy = true;
-                Message = $"Sende Anfrage an {user.Username} (ID: {user.Id})...";
+                Message = $"Sende Anfrage an {user.Username}...";
 
                 System.Diagnostics.Debug.WriteLine($"[FriendsViewModel] Sending request from User {UserSession.CurrentUserId} to User {user.Id}");
 
@@ -175,18 +198,24 @@ namespace Messanger.ViewModels
 
                 if (success)
                 {
-                    Message = $"? Freundschaftsanfrage an {user.Username} gesendet!";
+                    // Button-Status ändern
+                    user.RequestSent = true;
+                    
+                    Message = $"Freundschaftsanfrage an {user.Username} gesendet!";
                     System.Diagnostics.Debug.WriteLine($"[FriendsViewModel] Request sent successfully");
+                    
+                    // UI aktualisieren
+                    OnPropertyChanged(nameof(SearchResults));
                 }
                 else
                 {
-                    Message = "? Anfrage konnte nicht gesendet werden.";
+                    Message = "Anfrage konnte nicht gesendet werden.";
                     System.Diagnostics.Debug.WriteLine($"[FriendsViewModel] Request failed (returned false)");
                 }
             }
             catch (Exception ex)
             {
-                Message = $"? Fehler: {ex.Message}";
+                Message = $"Fehler: {ex.Message}";
                 System.Diagnostics.Debug.WriteLine($"[FriendsViewModel] Exception: {ex.Message}");
                 System.Diagnostics.Debug.WriteLine($"[FriendsViewModel] StackTrace: {ex.StackTrace}");
             }
@@ -200,7 +229,7 @@ namespace Messanger.ViewModels
         {
             if (!UserSession.IsLoggedIn)
             {
-                Message = "?? Bitte zuerst anmelden!";
+                Message = "Bitte zuerst anmelden!";
                 return;
             }
 
@@ -233,7 +262,7 @@ namespace Messanger.ViewModels
         {
             if (!UserSession.IsLoggedIn)
             {
-                Message = "?? Bitte zuerst anmelden!";
+                Message = "Bitte zuerst anmelden!";
                 return;
             }
 
@@ -242,10 +271,15 @@ namespace Messanger.ViewModels
                 IsBusy = true;
                 Message = string.Empty;
 
-                var requests = await apiService.GetPendingRequestsAsync(UserSession.CurrentUserId);
+                var requests = await apiService.GetPendingRequestsWithUserAsync(UserSession.CurrentUserId);
 
-                Message = $"{requests.Count} offene Anfragen vorhanden.";
-                // TODO: Anfragen anzeigen und Accept/Decline Buttons
+                PendingRequests.Clear();
+                foreach (var request in requests)
+                {
+                    PendingRequests.Add(request);
+                }
+
+                Message = $"{PendingRequests.Count} offene Anfragen vorhanden.";
             }
             catch (Exception ex)
             {
@@ -255,6 +289,129 @@ namespace Messanger.ViewModels
             {
                 IsBusy = false;
             }
+        }
+
+        private async Task ShowAllUsersAsync()
+        {
+            if (!UserSession.IsLoggedIn)
+            {
+                Message = "Bitte zuerst anmelden!";
+                return;
+            }
+
+            try
+            {
+                IsBusy = true;
+                Message = string.Empty;
+
+                var allUsers = await apiService.GetAllUsersAsync(UserSession.CurrentUserId);
+
+                SearchResults.Clear();
+                foreach (var user in allUsers)
+                {
+                    if (user.Id != UserSession.CurrentUserId)
+                    {
+                        SearchResults.Add(user);
+                    }
+                }
+
+                if (SearchResults.Count == 0)
+                {
+                    Message = "Keine anderen Benutzer gefunden.";
+                }
+            }
+            catch (Exception ex)
+            {
+                Message = "Fehler beim Laden der Benutzer: " + ex.Message;
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private async Task AcceptRequestAsync(FriendRequestWithUser request)
+        {
+            if (request == null) return;
+
+            if (!UserSession.IsLoggedIn)
+            {
+                Message = "Bitte zuerst anmelden!";
+                return;
+            }
+
+            try
+            {
+                IsBusy = true;
+                Message = $"Akzeptiere Anfrage von {request.SenderUsername}...";
+
+                var success = await apiService.AcceptFriendRequestAsync(request.RequestId);
+
+                if (success)
+                {
+                    Message = $"Anfrage von {request.SenderUsername} akzeptiert!";
+                    PendingRequests.Remove(request);
+                }
+                else
+                {
+                    Message = "Anfrage konnte nicht akzeptiert werden.";
+                }
+            }
+            catch (Exception ex)
+            {
+                Message = $"Fehler beim Akzeptieren: {ex.Message}";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private async Task DeclineRequestAsync(FriendRequestWithUser request)
+        {
+            if (request == null) return;
+
+            if (!UserSession.IsLoggedIn)
+            {
+                Message = "Bitte zuerst anmelden!";
+                return;
+            }
+
+            try
+            {
+                IsBusy = true;
+                Message = $"Lehne Anfrage von {request.SenderUsername} ab...";
+
+                var success = await apiService.DeclineFriendRequestAsync(request.RequestId);
+
+                if (success)
+                {
+                    Message = $"Anfrage von {request.SenderUsername} abgelehnt.";
+                    PendingRequests.Remove(request);
+                }
+                else
+                {
+                    Message = "Anfrage konnte nicht abgelehnt werden.";
+                }
+            }
+            catch (Exception ex)
+            {
+                Message = $"Fehler beim Ablehnen: {ex.Message}";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private async Task OpenChatAsync(User friend)
+        {
+            if (friend == null) return;
+
+            await Shell.Current.GoToAsync(nameof(Views.ChatPage), new Dictionary<string, object>
+            {
+                { "Friend", friend }
+            });
         }
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)

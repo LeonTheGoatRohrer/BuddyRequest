@@ -26,10 +26,32 @@
       ContentTemplate="{DataTemplate views:FriendsPage}" />
     </FlyoutItem>
 
+    <!-- Menüpunkt: Profil -->
+    <FlyoutItem Title="Profil" Route="ProfilPage">
+        <ShellContent
+      Title="Profil"
+      ContentTemplate="{DataTemplate views:ProfilPage}" />
+    </FlyoutItem>
+
     <FlyoutItem Title="Registrierung" Route="RegistrationPage">
         <ShellContent
       Title="Registrierung"
       ContentTemplate="{DataTemplate views:RegistrationPage}" />
     </FlyoutItem>
+
+    <FlyoutItem Title="Einstellungen" Route="SettingsPage">
+        <ShellContent
+      Title="Einstellungen"
+      ContentTemplate="{DataTemplate views:SettingsPage}" />
+    </FlyoutItem>
+
+    <!-- Menüpunkt: Karte (deaktiviert - benötigt Maps API Key) -->
+    <!--
+    <FlyoutItem Title="Karte" Route="MapPage">
+        <ShellContent
+      Title="Karte"
+      ContentTemplate="{DataTemplate views:MapPage}" />
+    </FlyoutItem>
+    -->
 
 </Shell>

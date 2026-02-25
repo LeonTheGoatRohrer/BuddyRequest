@@ -1,28 +1,30 @@
-﻿namespace Messanger.Views
+﻿using Messanger.ViewModels;
+using System;
+
+namespace Messanger.Views
 {
     public partial class MainPage : ContentPage
     {
         public MainPage()
         {
             InitializeComponent();
+            BindingContext = new MainPageViewModel();
         }
 
-        private async void OnLoginClicked(
-          object sender,
-          EventArgs e)
+        private async void OnChatsClicked(object sender, EventArgs e)
         {
-            await DisplayAlertAsync(
-              "Login",
-              "Login-Seite wird später implementiert.",
-              "OK");
+            // ChatPage braucht einen Freund als Parameter, daher zu FriendsPage navigieren
+            await Shell.Current.GoToAsync("///FriendsPage");
         }
 
-        private async void OnRegisterClicked(
-          object sender,
-          EventArgs e)
+        private async void OnFriendsClicked(object sender, EventArgs e)
         {
-            // über AppShell-Route zur Registrierungs-Seite
-            await Shell.Current.GoToAsync(nameof(RegistrationPage));
+            await Shell.Current.GoToAsync("///FriendsPage");
+        }
+
+        private async void OnProfilClicked(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync("///ProfilPage");
         }
     }
 }

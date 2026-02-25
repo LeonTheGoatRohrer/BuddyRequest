@@ -11,7 +11,6 @@ namespace Messanger.ViewModels
     public class LoginViewModel : INotifyPropertyChanged
     {
         private string username;
-        private string email;
         private string password;
         private string message;
         private bool isBusy;
@@ -29,6 +28,14 @@ namespace Messanger.ViewModels
                 async () => await LoginAsync(),
                 () => !IsBusy);
 
+            DemoLoginCommand = new Command(
+                async () => await DemoLoginAsync(),
+                () => !IsBusy);
+
+            DemoLoginFranzCommand = new Command(
+                async () => await DemoLoginFranzAsync(),
+                () => !IsBusy);
+
             Message = string.Empty;
         }
 
@@ -43,21 +50,6 @@ namespace Messanger.ViewModels
                 }
 
                 username = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string Email
-        {
-            get => email;
-            set
-            {
-                if (email == value)
-                {
-                    return;
-                }
-
-                email = value;
                 OnPropertyChanged();
             }
         }
@@ -109,6 +101,8 @@ namespace Messanger.ViewModels
         }
 
         public ICommand LoginCommand => loginCommand;
+        public ICommand DemoLoginCommand { get; }
+        public ICommand DemoLoginFranzCommand { get; }
 
         private async Task LoginAsync()
         {
@@ -125,12 +119,6 @@ namespace Messanger.ViewModels
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(Email))
-            {
-                Message = "Bitte eine E-Mail-Adresse eingeben.";
-                return;
-            }
-
             if (string.IsNullOrWhiteSpace(Password))
             {
                 Message = "Bitte ein Passwort eingeben.";
@@ -141,7 +129,7 @@ namespace Messanger.ViewModels
             {
                 IsBusy = true;
 
-                var user = await apiService.LoginAsync(Username, Password, Email);
+                var user = await apiService.LoginAsync(Username, Password);
 
                 if (user != null)
                 {
@@ -153,7 +141,6 @@ namespace Messanger.ViewModels
                     await Shell.Current.GoToAsync("///MainPage");
 
                     Username = string.Empty;
-                    Email = string.Empty;
                     Password = string.Empty;
                 }
                 else
@@ -169,6 +156,34 @@ namespace Messanger.ViewModels
             {
                 IsBusy = false;
             }
+        }
+
+        private async Task DemoLoginAsync()
+        {
+            if (IsBusy) return;
+
+            // Demo-User-Daten automatisch setzen
+            Username = "LeonROhrer";
+            Password = "Leon Rohrer 2006";
+
+            Message = "Demo-Login wird durchgeführt...";
+
+            // Login ausführen
+            await LoginAsync();
+        }
+
+        private async Task DemoLoginFranzAsync()
+        {
+            if (IsBusy) return;
+
+            // FranzSepp Demo-User-Daten automatisch setzen
+            Username = "FranzSepp";
+            Password = "FranzSepp21";
+
+            Message = "Demo-Login (FranzSepp) wird durchgeführt...";
+
+            // Login ausführen
+            await LoginAsync();
         }
 
         private void OnPropertyChanged(

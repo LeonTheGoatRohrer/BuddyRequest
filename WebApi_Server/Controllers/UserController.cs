@@ -48,6 +48,19 @@ namespace WebApi_Server.Controllers
             return Ok(user);
         }
 
+        //GET: api/users/all
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllUsers([FromQuery] int userId)
+        {
+            if (userId <= 0)
+            {
+                return BadRequest(new { message = "Ungültige User-ID." });
+            }
+
+            var users = await this._dbManager.GetAllUsersAsync(userId);
+            return Ok(users);
+        }
+
         //POST: api/users/register
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] User user)
@@ -81,7 +94,7 @@ namespace WebApi_Server.Controllers
 
         //POST: api/users/login
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] User loginDaten)
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDaten)
         {
             if (loginDaten == null || string.IsNullOrWhiteSpace(loginDaten.Username) || string.IsNullOrWhiteSpace(loginDaten.Password))
             {
@@ -105,8 +118,55 @@ namespace WebApi_Server.Controllers
             return Ok(user);
         }
 
+        // PATCH: api/users/update-bio/{id}
+        [HttpPatch("update-bio/{id}")]
+        public async Task<IActionResult> UpdateBio(int id, [FromBody] BioDto dto)
+        {
+            var user = await this._dbManager.findeBenutzerNachIdAsync(id);
+            if (user == null) return NotFound();
+            user.Bio = dto.Bio;
+            await this._dbManager.saveToDbAsync();
+            return Ok();
+        }
 
+        // PATCH: api/users/update-avatar/{id}
+        [HttpPatch("update-avatar/{id}")]
+        public async Task<IActionResult> UpdateAvatar(int id)
+        {
+            var user = await this._dbManager.findeBenutzerNachIdAsync(id);
+            if (user == null) return NotFound();
+            
+            // Neuen zufälligen Avatar generieren
+            var randomSeed = Guid.NewGuid().ToString();
+            user.AvatarUrl = $"https://api.dicebear.com/7.x/avataaars/png?seed={randomSeed}";
+            
+            await this._dbManager.saveToDbAsync();
+            return Ok(new { avatarUrl = user.AvatarUrl });
+        }
 
+        // PATCH: api/users/update-profile/{id}
+        [HttpPatch("update-profile/{id}")]
+        public async Task<IActionResult> UpdateProfile(int id, [FromBody] ProfileDto dto)
+        {
+            var user = await this._dbManager.findeBenutzerNachIdAsync(id);
+            if (user == null) return NotFound();
+
+            // Prüfen ob neuer Username bereits vergeben
+            if (!string.IsNullOrWhiteSpace(dto.Username) && dto.Username != user.Username)
+            {
+                var existing = await this._dbManager.findeBenutzerNachNameAsync(dto.Username);
+                if (existing != null)
+                    return Conflict(new { message = "Username bereits vergeben." });
+                user.Username = dto.Username;
+            }
+
+            // Email aktualisieren
+            if (!string.IsNullOrWhiteSpace(dto.Email))
+                user.Email = dto.Email;
+
+            await this._dbManager.saveToDbAsync();
+            return Ok(user);
+        }
 
         private string ErzeugeUserKey(string username)
         {
@@ -116,6 +176,23 @@ namespace WebApi_Server.Controllers
             string prefix = username.Length >= 2 ? username.Substring(0, 2).ToUpper() : "US"; //Prefix aus Username nehmen -> wenn zu klein dann "US"
 
             return $"{prefix}{number}"; //Schlüssen zusammenbauen und zurückgeben
+        }
+
+        public class BioDto
+        {
+            public string Bio { get; set; }
+        }
+
+        public class ProfileDto
+        {
+            public string? Username { get; set; }
+            public string? Email { get; set; }
+        }
+
+        public class LoginDto
+        {
+            public string Username { get; set; }
+            public string Password { get; set; }
         }
     }
 }

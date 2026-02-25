@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Messanger.Views.ChatPage"
+             Title="{Binding ChatTitle}">
+    
+    <Grid RowDefinitions="*,Auto">
+        
+        <!-- Nachrichten-Liste -->
+        <CollectionView Grid.Row="0"
+                        ItemsSource="{Binding Messages}"
+                        Margin="10"
+                        VerticalOptions="FillAndExpand">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="10" Margin="5" 
+                           BackgroundColor="#007AFF"
+                           CornerRadius="10"
+                           MaximumWidthRequest="300"
+                           HorizontalOptions="End">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Message}" FontSize="14" TextColor="White" />
+                            <Label Text="{Binding SentAtWithSender}" 
+                                   FontSize="10" 
+                                   TextColor="LightGray" 
+                                   HorizontalOptions="End" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Eingabefeld -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Padding="10" BackgroundColor="#F0F0F0">
+            <Entry Grid.Column="0" 
+                   Text="{Binding MessageText}" 
+                   Placeholder="Nachricht eingeben..." 
+                   VerticalOptions="Center" />
+            <Button Grid.Column="1" 
+                    Text="📤" 
+                    Command="{Binding SendMessageCommand}" 
+                    BackgroundColor="#007AFF" 
+                    TextColor="White" 
+                    CornerRadius="20" 
+                    WidthRequest="50" 
+                    HeightRequest="50" 
+                    Margin="10,0,0,0" />
+        </Grid>
+    </Grid>
+</ContentPage>

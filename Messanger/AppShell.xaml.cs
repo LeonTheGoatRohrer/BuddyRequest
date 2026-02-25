@@ -1,4 +1,6 @@
-﻿namespace Messanger
+﻿using Messanger.Views;
+
+namespace Messanger
 {
     public partial class AppShell : Shell
     {
@@ -10,6 +12,9 @@
             Routing.RegisterRoute(
               nameof(Views.RegistrationPage),
               typeof(Views.RegistrationPage));
+
+            // ChatPage-Route registrieren
+            Routing.RegisterRoute(nameof(ChatPage), typeof(ChatPage));
         }
     }
 }

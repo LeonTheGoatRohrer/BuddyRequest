@@ -2,27 +2,29 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Messanger.Views.MainPage"
-             Title="Start">
+             Title="Startseite">
 
-    <VerticalStackLayout Padding="20"
-                       Spacing="16">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <Label Text="{Binding Username, StringFormat='Hallo, {0}'}"
+                   FontSize="36"
+                   HorizontalOptions="Center"
+                   TextColor="White"
+                   FontAttributes="Bold"/>
+            
+            <Frame BackgroundColor="#f5f5f5" CornerRadius="15" Padding="20">
+                <VerticalStackLayout>
+                    <Label Text="Statistik" FontSize="24" FontAttributes="Bold" TextColor="#888"/>
+                    <Label Text="{Binding UserCount, StringFormat='Alle User: {0}'}" TextColor="#888"/>
+                    <Label Text="{Binding FriendsCount, StringFormat='Deine Freunde: {0}'}" TextColor="#888"/>
+                    <Label Text="{Binding AppUses, StringFormat='App-Uses: {0}'}" TextColor="#888"/>
+                    <Label Text="{Binding AppLoad, StringFormat='App-Auslastung: {0}'}" TextColor="#888"/>
+                </VerticalStackLayout>
+            </Frame>
 
-        <Label Text="Messenger"
-           FontSize="32"
-           HorizontalOptions="Center"
-           Margin="0,0,0,10" />
-
-        <Label Text="Willkommen! Bitte wählen:"
-           FontSize="18"
-           HorizontalOptions="Center"
-           Margin="0,0,0,20" />
-
-        <Button Text="Einloggen"
-            Margin="0,0,0,10"
-            Clicked="OnLoginClicked" />
-
-        <Button Text="Registrieren"
-            Clicked="OnRegisterClicked" />
-
-    </VerticalStackLayout>
+            <Button Text="Chats" BackgroundColor="#b39ddb" TextColor="Black" Clicked="OnChatsClicked"/>
+            <Button Text="Freunde" BackgroundColor="#b39ddb" TextColor="Black" Clicked="OnFriendsClicked"/>
+            <Button Text="Profil" BackgroundColor="#b39ddb" TextColor="Black" Clicked="OnProfilClicked"/>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

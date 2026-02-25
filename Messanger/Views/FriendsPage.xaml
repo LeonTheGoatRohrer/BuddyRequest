@@ -16,8 +16,20 @@
             <Label Text="Freunde suchen" FontSize="18" FontAttributes="Bold" />
             <Entry Placeholder="Username oder Key eingeben"
                    Text="{Binding SearchQuery}" />
-            <Button Text="Suchen"
-                    Command="{Binding SearchCommand}" />
+            
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <Button Grid.Column="0"
+                        Text="Suchen"
+                        Command="{Binding SearchCommand}"
+                        BackgroundColor="#007AFF"
+                        TextColor="White" />
+                
+                <Button Grid.Column="1"
+                        Text="Alle anzeigen"
+                        Command="{Binding ShowAllUsersCommand}"
+                        BackgroundColor="#34C759"
+                        TextColor="White" />
+            </Grid>
 
             <!-- Suchergebnisse -->
             <Label Text="Suchergebnisse:"
@@ -29,9 +41,24 @@
             <CollectionView ItemsSource="{Binding SearchResults}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Frame Padding="10" Margin="0,5" BorderColor="LightGray">
-                            <Grid ColumnDefinitions="*,Auto">
-                                <VerticalStackLayout Grid.Column="0">
+                        <Frame Padding="10" Margin="0,5" BorderColor="LightGray" CornerRadius="10">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                
+                                <!-- Avatar -->
+                                <Border Grid.Column="0" 
+                                        StrokeThickness="2"
+                                        Stroke="LightBlue"
+                                        WidthRequest="60"
+                                        HeightRequest="60">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="30"/>
+                                    </Border.StrokeShape>
+                                    <Image Source="{Binding Avatar}" 
+                                           Aspect="AspectFill"/>
+                                </Border>
+                                
+                                <!-- User Info -->
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
                                     <Label Text="{Binding Username}"
                                            FontSize="16"
                                            FontAttributes="Bold" />
@@ -42,11 +69,28 @@
                                            FontSize="12"
                                            TextColor="Gray" />
                                 </VerticalStackLayout>
-                                <Button Grid.Column="1"
-                                        Text="Anfrage senden"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SendRequestCommand}"
-                                        CommandParameter="{Binding .}"
-                                        VerticalOptions="Center" />
+                                
+                                <!-- Button -->
+                                <Button Grid.Column="2"
+                                        VerticalOptions="Center"
+                                        TextColor="White"
+                                        CornerRadius="5"
+                                        Padding="10,5">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding RequestSent}" Value="False">
+                                            <Setter Property="Text" Value="Anfrage senden" />
+                                            <Setter Property="BackgroundColor" Value="#007AFF" />
+                                            <Setter Property="IsEnabled" Value="True" />
+                                            <Setter Property="Command" Value="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SendRequestCommand}" />
+                                            <Setter Property="CommandParameter" Value="{Binding .}" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Button" Binding="{Binding RequestSent}" Value="True">
+                                            <Setter Property="Text" Value="✅ Anfrage gesendet" />
+                                            <Setter Property="BackgroundColor" Value="Gray" />
+                                            <Setter Property="IsEnabled" Value="False" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
                             </Grid>
                         </Frame>
                     </DataTemplate>
@@ -66,15 +110,43 @@
             <CollectionView ItemsSource="{Binding Friends}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Frame Padding="10" Margin="0,5" BorderColor="LightBlue">
-                            <VerticalStackLayout>
-                                <Label Text="{Binding Username}"
-                                       FontSize="16"
-                                       FontAttributes="Bold" />
-                                <Label Text="{Binding Key}"
-                                       FontSize="14"
-                                       TextColor="Gray" />
-                            </VerticalStackLayout>
+                        <Frame Padding="10" Margin="0,5" BorderColor="LightBlue" CornerRadius="10">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                
+                                <!-- Avatar -->
+                                <Border Grid.Column="0" 
+                                        StrokeThickness="2"
+                                        Stroke="Green"
+                                        WidthRequest="50"
+                                        HeightRequest="50">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="25"/>
+                                    </Border.StrokeShape>
+                                    <Image Source="{Binding Avatar}" 
+                                           Aspect="AspectFill"/>
+                                </Border>
+                                
+                                <!-- User Info -->
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                    <Label Text="{Binding Username}"
+                                           FontSize="16"
+                                           FontAttributes="Bold" />
+                                    <Label Text="{Binding Key}"
+                                           FontSize="14"
+                                           TextColor="Gray" />
+                                </VerticalStackLayout>
+
+                                <!-- Chat Button -->
+                                <Button Grid.Column="2"
+                                        Text="💬 Chat"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenChatCommand}"
+                                        CommandParameter="{Binding .}"
+                                        VerticalOptions="Center"
+                                        BackgroundColor="#007AFF"
+                                        TextColor="White"
+                                        CornerRadius="5"
+                                        Padding="10,5" />
+                            </Grid>
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
@@ -89,6 +161,70 @@
             <Button Text="Anfragen laden"
                     Command="{Binding LoadPendingRequestsCommand}"
                     Margin="0,0,0,10" />
+
+            <Label Text="Ausstehende Freundschaftsanfragen:"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   Margin="0,0,0,0"
+                   IsVisible="{Binding HasPendingRequests}" />
+
+            <CollectionView ItemsSource="{Binding PendingRequests}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Padding="10" Margin="0,5" BorderColor="Orange" CornerRadius="10">
+                            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
+                                
+                                <!-- Avatar -->
+                                <Border Grid.Column="0" 
+                                        StrokeThickness="2"
+                                        Stroke="Orange"
+                                        WidthRequest="50"
+                                        HeightRequest="50">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="25"/>
+                                    </Border.StrokeShape>
+                                    <Image Source="{Binding SenderAvatar}" 
+                                           Aspect="AspectFill"/>
+                                </Border>
+                                
+                                <!-- User Info -->
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                    <Label Text="{Binding SenderUsername}"
+                                           FontSize="16"
+                                           FontAttributes="Bold" />
+                                    <Label Text="{Binding SenderKey}"
+                                           FontSize="12"
+                                           TextColor="Gray" />
+                                </VerticalStackLayout>
+                                
+                                <!-- Accept Button -->
+                                <Button Grid.Column="2"
+                                        Text="✅ Annehmen"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AcceptRequestCommand}"
+                                        CommandParameter="{Binding .}"
+                                        VerticalOptions="Center"
+                                        BackgroundColor="#34C759"
+                                        TextColor="White"
+                                        CornerRadius="5"
+                                        Padding="8,4"
+                                        FontSize="12" />
+                                
+                                <!-- Decline Button -->
+                                <Button Grid.Column="3"
+                                        Text="❌ Ablehnen"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeclineRequestCommand}"
+                                        CommandParameter="{Binding .}"
+                                        VerticalOptions="Center"
+                                        BackgroundColor="#FF3B30"
+                                        TextColor="White"
+                                        CornerRadius="5"
+                                        Padding="8,4"
+                                        FontSize="12" />
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
             <Label Text="{Binding Message}"
                    TextColor="Blue"

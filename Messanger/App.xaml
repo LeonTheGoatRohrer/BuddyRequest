@@ -9,6 +9,17 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Theme Colors (Standard: Light) -->
+            <Color x:Key="BackgroundColor">#FFFFFF</Color>
+            <Color x:Key="SurfaceColor">#F5F5F5</Color>
+            <Color x:Key="TextColor">#000000</Color>
+            <Color x:Key="TextColorSecondary">#666666</Color>
+            <Color x:Key="BorderColor">#E0E0E0</Color>
+            <Color x:Key="PrimaryColor">#007AFF</Color>
+            <Color x:Key="SecondaryColor">#34C759</Color>
+            <Color x:Key="CardColor">#F5F5F5</Color>
+            <Color x:Key="ButtonTextColor">#FFFFFF</Color>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Messanger.Views.ProfilPage"
+             Title="Profil">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="18">
+            <Label Text="Mein Profil" FontSize="28" HorizontalOptions="Center" />
+            
+            <!-- Avatar -->
+            <Border StrokeThickness="2" Stroke="#007AFF" WidthRequest="120" HeightRequest="120" HorizontalOptions="Center">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="60"/>
+                </Border.StrokeShape>
+                <Image Source="{Binding AvatarUrl}" Aspect="AspectFill" />
+            </Border>
+
+            <Button Text="🎨 Profilbild ändern" 
+                    Command="{Binding ChangeAvatarCommand}" 
+                    BackgroundColor="#FF9500" 
+                    TextColor="White" 
+                    CornerRadius="8" 
+                    Margin="0,0,0,10" />
+            
+            <!-- Username -->
+            <Label Text="Benutzername:" FontSize="16" FontAttributes="Bold" />
+            <Entry Text="{Binding Username}" Placeholder="Benutzername" />
+            
+            <!-- Email -->
+            <Label Text="E-Mail:" FontSize="16" FontAttributes="Bold" />
+            <Entry Text="{Binding Email}" Placeholder="E-Mail" Keyboard="Email" />
+
+            <Button Text="💾 Profil speichern" 
+                    Command="{Binding SaveProfileCommand}" 
+                    BackgroundColor="#007AFF" 
+                    TextColor="White" 
+                    CornerRadius="8" />
+            
+            <!-- Bio -->
+            <Label Text="Bio:" FontSize="16" FontAttributes="Bold" Margin="0,10,0,0" />
+            <Editor Text="{Binding Bio}" AutoSize="TextChanges" HeightRequest="80" Placeholder="Erzähle etwas über dich..." />
+            
+            <Button Text="💾 Bio speichern" 
+                    Command="{Binding SaveBioCommand}" 
+                    BackgroundColor="#5856D6" 
+                    TextColor="White" 
+                    CornerRadius="8" />
+            
+            <Label Text="{Binding Message}" TextColor="Green" HorizontalOptions="Center" FontSize="14" />
+            
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+            
+            <Button Text="🚪 Logout" 
+                    Command="{Binding LogoutCommand}" 
+                    BackgroundColor="#FF3B30" 
+                    TextColor="White" 
+                    CornerRadius="8" 
+                    Margin="0,20,0,0" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

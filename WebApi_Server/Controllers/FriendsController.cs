@@ -60,7 +60,7 @@ namespace WebApi_Server.Controllers
                 return BadRequest(new { message = "Ungültige User-ID." });
             }
 
-            var requests = await _dbManager.GetPendingRequestsAsync(userId);
+            var requests = await _dbManager.GetPendingRequestsWithUserAsync(userId);
             return Ok(requests);
         }
 

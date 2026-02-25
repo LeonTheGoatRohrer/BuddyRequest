@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Messanger.Views.SettingsPage"
+             Title="Einstellungen"
+             BackgroundColor="{DynamicResource BackgroundColor}">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="18">
+            <Label Text="Einstellungen"
+                   FontSize="28"
+                   HorizontalOptions="Center"
+                   TextColor="{DynamicResource TextColor}" />
+
+            <Label Text="Sprache / Language:"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   TextColor="{DynamicResource TextColor}" />
+            <Picker
+                ItemsSource="{Binding Languages}"
+                SelectedItem="{Binding SelectedLanguage}"
+                Title="Wähle Sprache"
+                BackgroundColor="{DynamicResource SurfaceColor}"
+                TextColor="{DynamicResource TextColor}" />
+
+            <Label Text="Design / Theme:"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   Margin="0,20,0,0"
+                   TextColor="{DynamicResource TextColor}" />
+            <Picker
+                ItemsSource="{Binding Themes}"
+                SelectedItem="{Binding SelectedTheme}"
+                Title="Wähle Design"
+                BackgroundColor="{DynamicResource SurfaceColor}"
+                TextColor="{DynamicResource TextColor}" />
+
+            <Frame BorderColor="{DynamicResource BorderColor}"
+                   CornerRadius="10"
+                   Padding="15"
+                   Margin="0,20,0,0"
+                   BackgroundColor="{DynamicResource SurfaceColor}">
+                <Label Text="Das Design wird sofort angewendet!"
+                       TextColor="{DynamicResource TextColorSecondary}"
+                       FontSize="12" />
+            </Frame>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

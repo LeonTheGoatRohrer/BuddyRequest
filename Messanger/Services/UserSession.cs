@@ -13,7 +13,7 @@ namespace Messanger.Services
         }
 
         public static int CurrentUserId => CurrentUser?.Id ?? 0;
-
+        public static string CurrentUsername => CurrentUser?.Username ?? string.Empty;
         public static bool IsLoggedIn => CurrentUser != null && CurrentUser.Id > 0;
 
         public static void Login(User user)

@@ -7,6 +7,22 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="16">
 
+            <!-- App Logo / Avatar -->
+            <Border StrokeThickness="0"
+                    WidthRequest="100"
+                    HeightRequest="100"
+                    HorizontalOptions="Center"
+                    Margin="0,20,0,10"
+                    BackgroundColor="#007AFF">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="50"/>
+                </Border.StrokeShape>
+                <Label Text="👋" 
+                       FontSize="48" 
+                       HorizontalOptions="Center" 
+                       VerticalOptions="Center"/>
+            </Border>
+
             <Label Text="Anmelden"
                    FontSize="24"
                    HorizontalOptions="Center"
@@ -15,11 +31,6 @@
             <Label Text="Benutzername" />
             <Entry Placeholder="Benutzername"
                    Text="{Binding Username}" />
-
-            <Label Text="Email" />
-            <Entry Placeholder="Email"
-                   Keyboard="Email"
-                   Text="{Binding Email}" />
 
             <Label Text="Passwort" />
             <Entry Placeholder="Passwort"
@@ -33,11 +44,37 @@
                                IsVisible="{Binding IsBusy}" />
 
             <Button Text="Anmelden"
-                    Command="{Binding LoginCommand}" />
+                    Command="{Binding LoginCommand}"
+                    BackgroundColor="#007AFF"
+                    TextColor="White"
+                    CornerRadius="10"
+                    HeightRequest="50" />
+
+            <Label Text="Demo-Login:" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center" Margin="0,10,0,5" />
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <Button Grid.Column="0"
+                        Text="LeonROhrer"
+                        Command="{Binding DemoLoginCommand}"
+                        BackgroundColor="#34C759"
+                        TextColor="White"
+                        CornerRadius="10"
+                        HeightRequest="50" />
+                
+                <Button Grid.Column="1"
+                        Text="FranzSepp"
+                        Command="{Binding DemoLoginFranzCommand}"
+                        BackgroundColor="#FF9500"
+                        TextColor="White"
+                        CornerRadius="10"
+                        HeightRequest="50" />
+            </Grid>
 
             <Button Text="Noch kein Konto? Registrieren"
                     Clicked="OnRegisterClicked"
-                    Margin="0,10,0,0" />
+                    Margin="0,10,0,0"
+                    BackgroundColor="Transparent"
+                    TextColor="#007AFF" />
 
         </VerticalStackLayout>
     </ScrollView>
