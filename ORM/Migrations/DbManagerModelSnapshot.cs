@@ -98,6 +98,15 @@ namespace ORM.Migrations
                     b.Property<string>("Key")
                         .HasColumnType("longtext");
 
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("LastLocationUpdate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("longtext");

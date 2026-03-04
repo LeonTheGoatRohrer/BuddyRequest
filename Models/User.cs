@@ -27,6 +27,11 @@ namespace Models
         public string? Bio { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         
+        // Location Sharing
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+        public DateTime? LastLocationUpdate { get; set; }
+
         // Avatar-URL als Property (nicht Methode!)
         [NotMapped]
         public string Avatar

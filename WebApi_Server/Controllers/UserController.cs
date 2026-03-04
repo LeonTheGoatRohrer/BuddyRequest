@@ -178,6 +178,76 @@ namespace WebApi_Server.Controllers
             return $"{prefix}{number}"; //Schlüssen zusammenbauen und zurückgeben
         }
 
+        // POST: api/users/share-location/{id}
+        [HttpPost("share-location/{id}")]
+        public async Task<IActionResult> ShareLocation(int id, [FromBody] LocationDto dto)
+        {
+            var user = await this._dbManager.findeBenutzerNachIdAsync(id);
+            if (user == null) return NotFound(new { message = "User nicht gefunden." });
+
+            user.Latitude = dto.Latitude;
+            user.Longitude = dto.Longitude;
+            user.LastLocationUpdate = DateTime.UtcNow;
+
+            await this._dbManager.saveToDbAsync();
+            return Ok(new { message = "Location aktualisiert.", latitude = user.Latitude, longitude = user.Longitude });
+        }
+
+        // GET: api/users/friends-locations/{id}
+        [HttpGet("friends-locations/{id}")]
+        public async Task<IActionResult> GetFriendsLocations(int id)
+        {
+            try
+            {
+                var user = await this._dbManager.findeBenutzerNachIdAsync(id);
+                if (user == null) return NotFound();
+
+                // Hole alle Freunde des Users aus der Friends-Tabelle
+                var friendIds = this._dbManager.Friends
+                    .Where(f => (f.UserId == id || f.FriendUserId == id) && f.Angenommen)
+                    .Select(f => f.UserId == id ? f.FriendUserId : f.UserId)
+                    .ToList();
+
+                // Hole die User-Daten mit Location-Info
+                var friendLocations = this._dbManager.Users
+                    .Where(u => friendIds.Contains(u.Id) && u.Latitude.HasValue && u.Longitude.HasValue)
+                    .Select(u => new 
+                    { 
+                        u.Id, 
+                        u.Username, 
+                        u.Latitude, 
+                        u.Longitude, 
+                        u.LastLocationUpdate,
+                        u.AvatarUrl
+                    })
+                    .ToList();
+
+                return Ok(friendLocations);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        // GET: api/users/my-location/{id}
+        [HttpGet("my-location/{id}")]
+        public async Task<IActionResult> GetMyLocation(int id)
+        {
+            var user = await this._dbManager.findeBenutzerNachIdAsync(id);
+            if (user == null) return NotFound();
+
+            return Ok(new 
+            { 
+                id = user.Id,
+                username = user.Username,
+                latitude = user.Latitude,
+                longitude = user.Longitude,
+                lastLocationUpdate = user.LastLocationUpdate,
+                avatarUrl = user.AvatarUrl
+            });
+        }
+
         public class BioDto
         {
             public string Bio { get; set; }
@@ -193,6 +263,12 @@ namespace WebApi_Server.Controllers
         {
             public string Username { get; set; }
             public string Password { get; set; }
+        }
+
+        public class LocationDto
+        {
+            public double Latitude { get; set; }
+            public double Longitude { get; set; }
         }
     }
 }

@@ -296,5 +296,57 @@ namespace Messanger.Services
                 return new List<Models.Messages>();
             }
         }
+
+        // Location Sharing Methods
+        public async Task<bool> ShareLocationAsync(int userId, double latitude, double longitude)
+        {
+            try
+            {
+                var payload = new { latitude, longitude };
+                var response = await client.PostAsJsonAsync($"api/Users/share-location/{userId}", payload);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ApiService] ShareLocation exception: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<List<dynamic>> GetFriendsLocationsAsync(int userId)
+        {
+            try
+            {
+                var response = await client.GetAsync($"api/Users/friends-locations/{userId}");
+                
+                if (!response.IsSuccessStatusCode)
+                    return new List<dynamic>();
+
+                return await response.Content.ReadFromJsonAsync<List<dynamic>>() ?? new List<dynamic>();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ApiService] GetFriendsLocations exception: {ex.Message}");
+                return new List<dynamic>();
+            }
+        }
+
+        public async Task<dynamic> GetMyLocationAsync(int userId)
+        {
+            try
+            {
+                var response = await client.GetAsync($"api/Users/my-location/{userId}");
+                
+                if (!response.IsSuccessStatusCode)
+                    return null;
+
+                return await response.Content.ReadFromJsonAsync<dynamic>();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ApiService] GetMyLocation exception: {ex.Message}");
+                return null;
+            }
+        }
     }
 }

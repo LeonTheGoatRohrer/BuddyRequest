@@ -1,30 +1,47 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:helpers="clr-namespace:Messanger.Helpers"
              x:Class="Messanger.Views.MainPage"
-             Title="Startseite">
+             Title="{helpers:Translate Key=Nav_Home}"
+             BackgroundColor="{DynamicResource BackgroundColor}">
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
-            <Label Text="{Binding Username, StringFormat='Hallo, {0}'}"
-                   FontSize="36"
+            <Label FontSize="36"
                    HorizontalOptions="Center"
-                   TextColor="White"
-                   FontAttributes="Bold"/>
+                   TextColor="{DynamicResource TextColor}"
+                   FontAttributes="Bold">
+                <Label.Text>
+                    <MultiBinding StringFormat="Hallo, {0}">
+                        <Binding Path="Username" />
+                    </MultiBinding>
+                </Label.Text>
+            </Label>
             
-            <Frame BackgroundColor="#f5f5f5" CornerRadius="15" Padding="20">
+            <Frame BackgroundColor="{DynamicResource SurfaceColor}" CornerRadius="15" Padding="20">
                 <VerticalStackLayout>
-                    <Label Text="Statistik" FontSize="24" FontAttributes="Bold" TextColor="#888"/>
-                    <Label Text="{Binding UserCount, StringFormat='Alle User: {0}'}" TextColor="#888"/>
-                    <Label Text="{Binding FriendsCount, StringFormat='Deine Freunde: {0}'}" TextColor="#888"/>
-                    <Label Text="{Binding AppUses, StringFormat='App-Uses: {0}'}" TextColor="#888"/>
-                    <Label Text="{Binding AppLoad, StringFormat='App-Auslastung: {0}'}" TextColor="#888"/>
+                    <Label Text="{helpers:Translate Key=Main_Stats}" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource TextColorSecondary}"/>
+                    <Label FontSize="14" TextColor="{DynamicResource TextColorSecondary}">
+                        <Label.Text>
+                            <MultiBinding StringFormat="Alle User: {0}">
+                                <Binding Path="UserCount" />
+                            </MultiBinding>
+                        </Label.Text>
+                    </Label>
+                    <Label FontSize="14" TextColor="{DynamicResource TextColorSecondary}">
+                        <Label.Text>
+                            <MultiBinding StringFormat="Deine Freunde: {0}">
+                                <Binding Path="FriendsCount" />
+                            </MultiBinding>
+                        </Label.Text>
+                    </Label>
                 </VerticalStackLayout>
             </Frame>
 
-            <Button Text="Chats" BackgroundColor="#b39ddb" TextColor="Black" Clicked="OnChatsClicked"/>
-            <Button Text="Freunde" BackgroundColor="#b39ddb" TextColor="Black" Clicked="OnFriendsClicked"/>
-            <Button Text="Profil" BackgroundColor="#b39ddb" TextColor="Black" Clicked="OnProfilClicked"/>
+            <Button Text="{helpers:Translate Key=Main_Chats}" BackgroundColor="#007AFF" TextColor="White" Clicked="OnChatsClicked"/>
+            <Button Text="{helpers:Translate Key=Main_Friends}" BackgroundColor="#007AFF" TextColor="White" Clicked="OnFriendsClicked"/>
+            <Button Text="{helpers:Translate Key=Main_Profile}" BackgroundColor="#007AFF" TextColor="White" Clicked="OnProfilClicked"/>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

@@ -2,7 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Messanger.Views.FriendsPage"
-             Title="Freunde">
+             Title="Freunde"
+             BackgroundColor="{DynamicResource BackgroundColor}">
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="16">
@@ -10,12 +11,16 @@
             <Label Text="Freunde verwalten"
                    FontSize="24"
                    HorizontalOptions="Center"
-                   Margin="0,0,0,10" />
+                   Margin="0,0,0,10"
+                   TextColor="{DynamicResource TextColor}" />
 
             <!-- Suchbereich -->
-            <Label Text="Freunde suchen" FontSize="18" FontAttributes="Bold" />
+            <Label Text="Freunde suchen" FontSize="18" FontAttributes="Bold" TextColor="{DynamicResource TextColor}" />
             <Entry Placeholder="Username oder Key eingeben"
-                   Text="{Binding SearchQuery}" />
+                   Text="{Binding SearchQuery}"
+                   TextColor="{DynamicResource TextColor}"
+                   PlaceholderColor="{DynamicResource TextColorSecondary}"
+                   BackgroundColor="{DynamicResource SurfaceColor}" />
             
             <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                 <Button Grid.Column="0"
