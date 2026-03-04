@@ -8,13 +8,8 @@ namespace Messanger
         {
             InitializeComponent();
 
-            // Optional, aber hilfreich für GoToAsync
-            Routing.RegisterRoute(
-              nameof(Views.RegistrationPage),
-              typeof(Views.RegistrationPage));
-
-            // ChatPage-Route registrieren
-            Routing.RegisterRoute(nameof(ChatPage), typeof(ChatPage));
+            // Nur Seiten registrieren die NICHT in der Shell-Hierarchie sind
+            Routing.RegisterRoute("ChatPage", typeof(ChatPage));
         }
     }
 }

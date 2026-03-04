@@ -1,68 +1,32 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              x:Class="Messanger.Views.MapPage"
              Title="Standorte"
              BackgroundColor="{DynamicResource BackgroundColor}">
-    
+
     <Grid RowDefinitions="*,Auto" BackgroundColor="{DynamicResource BackgroundColor}">
-        <!-- Map -->
-        <maps:Map x:Name="UserMap"
-                  Grid.Row="0"
-                  IsShowingUser="True"
-                  MapType="Street" />
+
+        <!-- OpenStreetMap in WebView -->
+        <WebView Grid.Row="0" 
+                 x:Name="MapWebView" />
 
         <!-- Control Panel -->
-        <VerticalStackLayout Grid.Row="1" 
-                            Padding="15" 
-                            Spacing="10"
-                            BackgroundColor="{DynamicResource SurfaceColor}">
-            <Label Text="Standortfreigabe"
-                   FontSize="16"
-                   FontAttributes="Bold"
-                   TextColor="{DynamicResource TextColor}" />
-            
+        <Frame Grid.Row="1" Padding="12" Margin="10,5,10,10" 
+               BackgroundColor="{DynamicResource SurfaceColor}"
+               CornerRadius="12">
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                 <Label Grid.Column="0"
-                       Text="Mein Standort teilen"
+                       Text="Meinen Standort teilen"
                        VerticalOptions="Center"
+                       FontSize="16"
                        TextColor="{DynamicResource TextColor}" />
-                
                 <Switch Grid.Column="1"
-                        IsToggled="{Binding IsSharing}"
+                        x:Name="SharingSwitch"
+                        Toggled="OnSharingToggled"
                         OnColor="#34C759"
                         ThumbColor="White" />
             </Grid>
-
-            <CollectionView ItemsSource="{Binding FriendLocations}" HeightRequest="150">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Frame Padding="10" Margin="5" BackgroundColor="{DynamicResource BackgroundColor}" BorderColor="{DynamicResource BorderColor}">
-                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                                <Image Grid.Column="0" 
-                                       Source="{Binding AvatarUrl}"
-                                       WidthRequest="40"
-                                       HeightRequest="40"
-                                       Aspect="AspectFill">
-                                    <Image.Clip>
-                                        <RoundRectangleGeometry CornerRadius="20"/>
-                                    </Image.Clip>
-                                </Image>
-                                
-                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
-                                    <Label Text="{Binding Username}"
-                                           FontAttributes="Bold"
-                                           TextColor="{DynamicResource TextColor}" />
-                                    <Label Text="{Binding Latitude, StringFormat='📍 {0:F4}'}"
-                                           FontSize="12"
-                                           TextColor="{DynamicResource TextColorSecondary}" />
-                                </VerticalStackLayout>
-                            </Grid>
-                        </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </VerticalStackLayout>
+        </Frame>
     </Grid>
 </ContentPage>

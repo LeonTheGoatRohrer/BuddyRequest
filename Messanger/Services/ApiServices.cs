@@ -348,5 +348,149 @@ namespace Messanger.Services
                 return null;
             }
         }
+
+        // Request Methods
+        public async Task<bool> CreateRequestAsync(int senderId, int receiverId, string requestType, string message)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"[ApiService] CreateRequestAsync START");
+                System.Diagnostics.Debug.WriteLine($"[ApiService] SenderId={senderId}, ReceiverId={receiverId}");
+                System.Diagnostics.Debug.WriteLine($"[ApiService] RequestType={requestType}, Message={message}");
+
+                var payload = new
+                {
+                    SenderId = senderId,
+                    ReceiverId = receiverId,
+                    RequestType = requestType,
+                    Message = message
+                };
+
+                System.Diagnostics.Debug.WriteLine($"[ApiService] Sende POST zu api/Requests/create");
+                var response = await client.PostAsJsonAsync("api/Requests/create", payload);
+                
+                System.Diagnostics.Debug.WriteLine($"[ApiService] Response Status: {response.StatusCode}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    System.Diagnostics.Debug.WriteLine($"[ApiService] CreateRequest FAILED: {response.StatusCode}");
+                    System.Diagnostics.Debug.WriteLine($"[ApiService] Error Response: {error}");
+                    return false;
+                }
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                System.Diagnostics.Debug.WriteLine($"[ApiService] CreateRequest SUCCESS");
+                System.Diagnostics.Debug.WriteLine($"[ApiService] Response: {responseContent}");
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ApiService] CreateRequest EXCEPTION: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"[ApiService] StackTrace: {ex.StackTrace}");
+                return false;
+            }
+        }
+
+        public async Task<List<RequestWithUser>> GetPendingRequestsAsync2(int userId)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"[ApiService] GetPendingRequestsAsync2 - UserId: {userId}");
+                var response = await client.GetAsync($"api/Requests/pending/{userId}");
+                
+                System.Diagnostics.Debug.WriteLine($"[ApiService] GetPendingRequests Response Status: {response.StatusCode}");
+                
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    System.Diagnostics.Debug.WriteLine($"[ApiService] GetPendingRequests FAILED: {error}");
+                    return new List<RequestWithUser>();
+                }
+
+                var result = await response.Content.ReadFromJsonAsync<List<RequestWithUser>>() ?? new List<RequestWithUser>();
+                System.Diagnostics.Debug.WriteLine($"[ApiService] GetPendingRequests SUCCESS - Anzahl: {result.Count}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ApiService] GetPendingRequests exception: {ex.Message}");
+                return new List<RequestWithUser>();
+            }
+        }
+
+        public async Task<List<RequestWithUser>> GetSentRequestsAsync(int userId)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"[ApiService] GetSentRequestsAsync - UserId: {userId}");
+                var response = await client.GetAsync($"api/Requests/sent/{userId}");
+                
+                System.Diagnostics.Debug.WriteLine($"[ApiService] GetSentRequests Response Status: {response.StatusCode}");
+                
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    System.Diagnostics.Debug.WriteLine($"[ApiService] GetSentRequests FAILED: {error}");
+                    return new List<RequestWithUser>();
+                }
+
+                var result = await response.Content.ReadFromJsonAsync<List<RequestWithUser>>() ?? new List<RequestWithUser>();
+                System.Diagnostics.Debug.WriteLine($"[ApiService] GetSentRequests SUCCESS - Anzahl: {result.Count}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ApiService] GetSentRequests exception: {ex.Message}");
+                return new List<RequestWithUser>();
+            }
+        }
+
+        public async Task<List<RequestWithUser>> GetRequestHistoryAsync(int userId)
+        {
+            try
+            {
+                var response = await client.GetAsync($"api/Requests/history/{userId}");
+                
+                if (!response.IsSuccessStatusCode)
+                    return new List<RequestWithUser>();
+
+                return await response.Content.ReadFromJsonAsync<List<RequestWithUser>>() ?? new List<RequestWithUser>();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ApiService] GetRequestHistory exception: {ex.Message}");
+                return new List<RequestWithUser>();
+            }
+        }
+
+        public async Task<bool> AcceptRequestAsync2(int requestId)
+        {
+            try
+            {
+                var response = await client.PutAsync($"api/Requests/accept/{requestId}", null);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ApiService] AcceptRequest exception: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<bool> DeclineRequestAsync2(int requestId)
+        {
+            try
+            {
+                var response = await client.PutAsync($"api/Requests/decline/{requestId}", null);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ApiService] DeclineRequest exception: {ex.Message}");
+                return false;
+            }
+        }
     }
 }

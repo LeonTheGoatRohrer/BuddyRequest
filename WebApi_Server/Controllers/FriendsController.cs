@@ -84,7 +84,7 @@ namespace WebApi_Server.Controllers
                 return BadRequest(new { message = "Ungültige Request-ID." });
             }
 
-            var success = await _dbManager.AcceptRequestAsync(requestId);
+            var success = await _dbManager.AcceptFriendRequestAsync(requestId);
 
             if (!success)
             {
@@ -102,7 +102,7 @@ namespace WebApi_Server.Controllers
                 return BadRequest(new { message = "Ungültige Request-ID." });
             }
 
-            var success = await _dbManager.DeclineRequestAsync(requestId);
+            var success = await _dbManager.DeclineFriendRequestAsync(requestId);
 
             if (!success)
             {

@@ -11,20 +11,24 @@ namespace Messanger.Views
             BindingContext = new MainPageViewModel();
         }
 
-        private async void OnChatsClicked(object sender, EventArgs e)
+        private void OnChatsClicked(object sender, EventArgs e)
         {
-            // ChatPage braucht einen Freund als Parameter, daher zu FriendsPage navigieren
-            await Shell.Current.GoToAsync("///FriendsPage");
+            // Freunde-Seite ist Index 2
+            if (Shell.Current.Items.Count > 2)
+                Shell.Current.CurrentItem = Shell.Current.Items[2];
         }
 
-        private async void OnFriendsClicked(object sender, EventArgs e)
+        private void OnFriendsClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("///FriendsPage");
+            if (Shell.Current.Items.Count > 2)
+                Shell.Current.CurrentItem = Shell.Current.Items[2];
         }
 
-        private async void OnProfilClicked(object sender, EventArgs e)
+        private void OnProfilClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("///ProfilPage");
+            // Profil ist Index 3
+            if (Shell.Current.Items.Count > 3)
+                Shell.Current.CurrentItem = Shell.Current.Items[3];
         }
     }
 }

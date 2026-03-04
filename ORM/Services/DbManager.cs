@@ -12,6 +12,7 @@ namespace ORM.Services
         public DbSet<User> Users { get; set; }
         public DbSet<Friends> Friends { get; set; }
         public DbSet<Messages> Messages { get; set; }
+        public DbSet<Request> Requests { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -194,7 +195,7 @@ namespace ORM.Services
                 .ToListAsync();
         }
 
-        public async Task<bool> AcceptRequestAsync(int requestId)
+        public async Task<bool> AcceptFriendRequestAsync(int requestId)
         {
             var request = await this.Friends.FindAsync(requestId);
             if (request == null)
@@ -207,7 +208,7 @@ namespace ORM.Services
             return true;
         }
 
-        public async Task<bool> DeclineRequestAsync(int requestId)
+        public async Task<bool> DeclineFriendRequestAsync(int requestId)
         {
             var request = await this.Friends.FindAsync(requestId);
             if (request == null)
@@ -259,6 +260,159 @@ namespace ORM.Services
                 .ToListAsync();
 
             return conversationPartners;
+        }
+
+        // ===== REQUEST METHODS =====
+
+        public async Task<Request> CreateRequestAsync(Request request)
+        {
+            request.Id = 0;
+            request.CreatedAt = DateTime.UtcNow;
+            request.Status = "Pending";
+
+            await this.Requests.AddAsync(request);
+            await this.SaveChangesAsync();
+            return request;
+        }
+
+        public async Task<List<RequestWithUser>> GetPendingRequestsForUserAsync(int userId)
+        {
+            var requests = await this.Requests
+                .Where(r => r.ReceiverId == userId && r.Status == "Pending")
+                .Join(this.Users,
+                    r => r.SenderId,
+                    u => u.Id,
+                    (r, u) => new RequestWithUser
+                    {
+                        Id = r.Id,
+                        SenderId = r.SenderId,
+                        ReceiverId = r.ReceiverId,
+                        RequestType = r.RequestType,
+                        Message = r.Message,
+                        Status = r.Status,
+                        CreatedAt = r.CreatedAt,
+                        RespondedAt = r.RespondedAt,
+                        SenderUsername = u.Username,
+                        SenderAvatarUrl = string.IsNullOrEmpty(u.AvatarUrl)
+                            ? $"https://api.dicebear.com/7.x/avataaars/png?seed={u.Username}"
+                            : u.AvatarUrl,
+                        SenderKey = u.Key ?? string.Empty,
+                        ReceiverUsername = string.Empty,
+                        ReceiverAvatarUrl = string.Empty
+                    })
+                .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync();
+
+            return requests;
+        }
+
+        public async Task<List<RequestWithUser>> GetSentRequestsAsync(int userId)
+        {
+            var requests = await this.Requests
+                .Where(r => r.SenderId == userId)
+                .Join(this.Users,
+                    r => r.ReceiverId,
+                    u => u.Id,
+                    (r, u) => new RequestWithUser
+                    {
+                        Id = r.Id,
+                        SenderId = r.SenderId,
+                        ReceiverId = r.ReceiverId,
+                        RequestType = r.RequestType,
+                        Message = r.Message,
+                        Status = r.Status,
+                        CreatedAt = r.CreatedAt,
+                        RespondedAt = r.RespondedAt,
+                        SenderUsername = string.Empty,
+                        SenderAvatarUrl = string.Empty,
+                        SenderKey = string.Empty,
+                        ReceiverUsername = u.Username,
+                        ReceiverAvatarUrl = string.IsNullOrEmpty(u.AvatarUrl)
+                            ? $"https://api.dicebear.com/7.x/avataaars/png?seed={u.Username}"
+                            : u.AvatarUrl
+                    })
+                .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync();
+
+            return requests;
+        }
+
+        public async Task<List<RequestWithUser>> GetRequestHistoryAsync(int userId)
+        {
+            var requests = await this.Requests
+                .Where(r => (r.SenderId == userId || r.ReceiverId == userId) && r.Status != "Pending")
+                .ToListAsync();
+
+            var requestsWithUser = new List<RequestWithUser>();
+
+            foreach (var request in requests)
+            {
+                var otherUserId = request.SenderId == userId ? request.ReceiverId : request.SenderId;
+                var otherUser = await this.Users.FindAsync(otherUserId);
+
+                if (otherUser != null)
+                {
+                    var requestWithUser = new RequestWithUser
+                    {
+                        Id = request.Id,
+                        SenderId = request.SenderId,
+                        ReceiverId = request.ReceiverId,
+                        RequestType = request.RequestType,
+                        Message = request.Message,
+                        Status = request.Status,
+                        CreatedAt = request.CreatedAt,
+                        RespondedAt = request.RespondedAt
+                    };
+
+                    if (request.SenderId == userId)
+                    {
+                        requestWithUser.ReceiverUsername = otherUser.Username;
+                        requestWithUser.ReceiverAvatarUrl = string.IsNullOrEmpty(otherUser.AvatarUrl)
+                            ? $"https://api.dicebear.com/7.x/avataaars/png?seed={otherUser.Username}"
+                            : otherUser.AvatarUrl;
+                    }
+                    else
+                    {
+                        requestWithUser.SenderUsername = otherUser.Username;
+                        requestWithUser.SenderAvatarUrl = string.IsNullOrEmpty(otherUser.AvatarUrl)
+                            ? $"https://api.dicebear.com/7.x/avataaars/png?seed={otherUser.Username}"
+                            : otherUser.AvatarUrl;
+                        requestWithUser.SenderKey = otherUser.Key ?? string.Empty;
+                    }
+
+                    requestsWithUser.Add(requestWithUser);
+                }
+            }
+
+            return requestsWithUser.OrderByDescending(r => r.RespondedAt ?? r.CreatedAt).ToList();
+        }
+
+        public async Task<bool> AcceptRequestAsync(int requestId)
+        {
+            var request = await this.Requests.FindAsync(requestId);
+            if (request == null || request.Status != "Pending")
+            {
+                return false;
+            }
+
+            request.Status = "Accepted";
+            request.RespondedAt = DateTime.UtcNow;
+            await this.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeclineRequestAsync(int requestId)
+        {
+            var request = await this.Requests.FindAsync(requestId);
+            if (request == null || request.Status != "Pending")
+            {
+                return false;
+            }
+
+            request.Status = "Declined";
+            request.RespondedAt = DateTime.UtcNow;
+            await this.SaveChangesAsync();
+            return true;
         }
     }
 }

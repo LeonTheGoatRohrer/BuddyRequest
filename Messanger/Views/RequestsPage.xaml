@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Messanger.ViewModels"
+             x:Class="Messanger.Views.RequestsPage"
+             Title="Requests"
+             BackgroundColor="{DynamicResource BackgroundColor}">
+    <ContentPage.BindingContext>
+        <vm:RequestsViewModel />
+    </ContentPage.BindingContext>
+    
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- Status Message -->
+            <Label Text="{Binding StatusMessage}"
+                   TextColor="{DynamicResource TextColor}"
+                   FontSize="14"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,10" />
+
+            <!-- Request senden -->
+            <Frame BackgroundColor="{DynamicResource CardColor}"
+                   BorderColor="{DynamicResource BorderColor}"
+                   CornerRadius="10"
+                   Padding="15"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="📤 Neuen Request senden"
+                           TextColor="{DynamicResource TextColor}"
+                           FontSize="20"
+                           FontAttributes="Bold" />
+
+                    <Button Text="👥 Freunde laden"
+                            Command="{Binding LoadFriendsCommand}"
+                            BackgroundColor="{DynamicResource SecondaryColor}"
+                            TextColor="White"
+                            CornerRadius="8"
+                            HeightRequest="45" />
+
+                    <Label Text="Freund auswählen:"
+                           TextColor="{DynamicResource TextColorSecondary}"
+                           FontSize="14" />
+
+                    <Picker ItemsSource="{Binding Friends}"
+                            ItemDisplayBinding="{Binding Username}"
+                            SelectedItem="{Binding SelectedFriend}"
+                            TextColor="{DynamicResource TextColor}"
+                            BackgroundColor="{DynamicResource SurfaceColor}"
+                            Title="Wähle einen Freund..." />
+
+                    <Label Text="Request-Typ:"
+                           TextColor="{DynamicResource TextColorSecondary}"
+                           FontSize="14" />
+
+                    <Picker ItemsSource="{Binding RequestTypes}"
+                            SelectedItem="{Binding RequestType}"
+                            TextColor="{DynamicResource TextColor}"
+                            BackgroundColor="{DynamicResource SurfaceColor}"
+                            Title="Wähle Typ..." />
+
+                    <Label Text="Nachricht:"
+                           TextColor="{DynamicResource TextColorSecondary}"
+                           FontSize="14" />
+
+                    <Editor Text="{Binding RequestMessage}"
+                            Placeholder="Beschreibe deine Anfrage..."
+                            HeightRequest="100"
+                            TextColor="{DynamicResource TextColor}"
+                            BackgroundColor="{DynamicResource SurfaceColor}"
+                            AutoSize="TextChanges" />
+
+                    <Button Text="✉️ Request senden"
+                            Command="{Binding SendRequestCommand}"
+                            Clicked="OnSendRequestClicked"
+                            BackgroundColor="{DynamicResource PrimaryColor}"
+                            TextColor="White"
+                            CornerRadius="8"
+                            HeightRequest="50"
+                            FontSize="16"
+                            FontAttributes="Bold" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Offene Anfragen (Pending) -->
+            <Frame BackgroundColor="{DynamicResource CardColor}"
+                   BorderColor="{DynamicResource BorderColor}"
+                   CornerRadius="10"
+                   Padding="15"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="📬 Offene Anfragen an mich"
+                           TextColor="{DynamicResource TextColor}"
+                           FontSize="20"
+                           FontAttributes="Bold" />
+
+                    <Button Text="🔄 Aktualisieren"
+                            Command="{Binding LoadPendingRequestsCommand}"
+                            BackgroundColor="{DynamicResource SecondaryColor}"
+                            TextColor="White"
+                            CornerRadius="8"
+                            HeightRequest="45" />
+
+                    <CollectionView ItemsSource="{Binding PendingRequests}">
+                        <CollectionView.EmptyView>
+                            <Label Text="Keine offenen Anfragen"
+                                   TextColor="{DynamicResource TextColorSecondary}"
+                                   FontSize="14"
+                                   HorizontalOptions="Center"
+                                   Margin="0,20,0,0" />
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame BackgroundColor="{DynamicResource SurfaceColor}"
+                                       BorderColor="{DynamicResource PrimaryColor}"
+                                       CornerRadius="8"
+                                       Padding="12"
+                                       Margin="0,5"
+                                       HasShadow="True">
+                                    <Grid ColumnDefinitions="60,*,Auto" RowSpacing="5">
+                                        <!-- Avatar -->
+                                        <Image Source="{Binding SenderAvatarUrl}"
+                                               WidthRequest="55"
+                                               HeightRequest="55"
+                                               Aspect="AspectFill"
+                                               Grid.Column="0"
+                                               Grid.RowSpan="4">
+                                            <Image.Clip>
+                                                <EllipseGeometry Center="27.5,27.5" RadiusX="27.5" RadiusY="27.5"/>
+                                            </Image.Clip>
+                                        </Image>
+
+                                        <!-- Infos -->
+                                        <VerticalStackLayout Grid.Column="1" Padding="10,0" Spacing="3">
+                                            <Label Text="{Binding SenderUsername}"
+                                                   TextColor="{DynamicResource TextColor}"
+                                                   FontAttributes="Bold"
+                                                   FontSize="16" />
+                                            <Label Text="{Binding RequestType}"
+                                                   TextColor="{DynamicResource PrimaryColor}"
+                                                   FontSize="14"
+                                                   FontAttributes="Bold" />
+                                            <Label Text="{Binding Message}"
+                                                   TextColor="{DynamicResource TextColorSecondary}"
+                                                   FontSize="13"
+                                                   LineBreakMode="WordWrap" />
+                                            <Label Text="{Binding CreatedAt, StringFormat='{0:dd.MM.yyyy HH:mm}'}"
+                                                   TextColor="{DynamicResource TextColorSecondary}"
+                                                   FontSize="11" />
+                                        </VerticalStackLayout>
+
+                                        <!-- Buttons -->
+                                        <VerticalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center">
+                                            <Button Text="✓"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AcceptRequestCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    BackgroundColor="#34C759"
+                                                    TextColor="White"
+                                                    WidthRequest="55"
+                                                    HeightRequest="40"
+                                                    CornerRadius="8"
+                                                    FontSize="18"
+                                                    FontAttributes="Bold" />
+                                            <Button Text="✗"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeclineRequestCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    BackgroundColor="#FF3B30"
+                                                    TextColor="White"
+                                                    WidthRequest="55"
+                                                    HeightRequest="40"
+                                                    CornerRadius="8"
+                                                    FontSize="18"
+                                                    FontAttributes="Bold" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Gesendete Requests -->
+            <Frame BackgroundColor="{DynamicResource CardColor}"
+                   BorderColor="{DynamicResource BorderColor}"
+                   CornerRadius="10"
+                   Padding="15"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="📨 Meine gesendeten Requests"
+                           TextColor="{DynamicResource TextColor}"
+                           FontSize="20"
+                           FontAttributes="Bold" />
+
+                    <Button Text="🔄 Aktualisieren"
+                            Command="{Binding LoadSentRequestsCommand}"
+                            BackgroundColor="{DynamicResource SecondaryColor}"
+                            TextColor="White"
+                            CornerRadius="8"
+                            HeightRequest="45" />
+
+                    <CollectionView ItemsSource="{Binding SentRequests}">
+                        <CollectionView.EmptyView>
+                            <Label Text="Keine gesendeten Requests"
+                                   TextColor="{DynamicResource TextColorSecondary}"
+                                   FontSize="14"
+                                   HorizontalOptions="Center"
+                                   Margin="0,20,0,0" />
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame BackgroundColor="{DynamicResource SurfaceColor}"
+                                       BorderColor="{DynamicResource BorderColor}"
+                                       CornerRadius="8"
+                                       Padding="12"
+                                       Margin="0,5"
+                                       HasShadow="True">
+                                    <Grid ColumnDefinitions="60,*,Auto">
+                                        <Image Source="{Binding ReceiverAvatarUrl}"
+                                               WidthRequest="55"
+                                               HeightRequest="55"
+                                               Aspect="AspectFill"
+                                               Grid.Column="0">
+                                            <Image.Clip>
+                                                <EllipseGeometry Center="27.5,27.5" RadiusX="27.5" RadiusY="27.5"/>
+                                            </Image.Clip>
+                                        </Image>
+
+                                        <VerticalStackLayout Grid.Column="1" Padding="10,0" Spacing="3">
+                                            <Label Text="{Binding ReceiverUsername}"
+                                                   TextColor="{DynamicResource TextColor}"
+                                                   FontAttributes="Bold"
+                                                   FontSize="16" />
+                                            <Label Text="{Binding RequestType}"
+                                                   TextColor="{DynamicResource PrimaryColor}"
+                                                   FontSize="14"
+                                                   FontAttributes="Bold" />
+                                            <Label Text="{Binding Message}"
+                                                   TextColor="{DynamicResource TextColorSecondary}"
+                                                   FontSize="13"
+                                                   LineBreakMode="WordWrap" />
+                                            <Label Text="{Binding Status}"
+                                                   TextColor="{DynamicResource TextColorSecondary}"
+                                                   FontSize="12"
+                                                   FontAttributes="Italic" />
+                                        </VerticalStackLayout>
+
+                                        <!-- Status Badge -->
+                                        <Label Grid.Column="2"
+                                               Text="{Binding Status}"
+                                               TextColor="White"
+                                               FontSize="11"
+                                               FontAttributes="Bold"
+                                               Padding="8,4"
+                                               VerticalOptions="Start"
+                                               HorizontalOptions="End">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="Pending">
+                                                    <Setter Property="BackgroundColor" Value="#FF9500" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="Accepted">
+                                                    <Setter Property="BackgroundColor" Value="#34C759" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="Declined">
+                                                    <Setter Property="BackgroundColor" Value="#FF3B30" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- History -->
+            <Frame BackgroundColor="{DynamicResource CardColor}"
+                   BorderColor="{DynamicResource BorderColor}"
+                   CornerRadius="10"
+                   Padding="15"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="📜 Request-Verlauf"
+                           TextColor="{DynamicResource TextColor}"
+                           FontSize="20"
+                           FontAttributes="Bold" />
+
+                    <Button Text="🔄 Aktualisieren"
+                            Command="{Binding LoadHistoryCommand}"
+                            BackgroundColor="{DynamicResource SecondaryColor}"
+                            TextColor="White"
+                            CornerRadius="8"
+                            HeightRequest="45" />
+
+                    <CollectionView ItemsSource="{Binding History}">
+                        <CollectionView.EmptyView>
+                            <Label Text="Keine History vorhanden"
+                                   TextColor="{DynamicResource TextColorSecondary}"
+                                   FontSize="14"
+                                   HorizontalOptions="Center"
+                                   Margin="0,20,0,0" />
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame BackgroundColor="{DynamicResource SurfaceColor}"
+                                       BorderColor="{DynamicResource BorderColor}"
+                                       CornerRadius="8"
+                                       Padding="12"
+                                       Margin="0,5"
+                                       HasShadow="True">
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="{Binding RequestType}"
+                                               TextColor="{DynamicResource PrimaryColor}"
+                                               FontAttributes="Bold"
+                                               FontSize="15" />
+                                        <Label Text="{Binding Message}"
+                                               TextColor="{DynamicResource TextColor}"
+                                               FontSize="13"
+                                               LineBreakMode="WordWrap" />
+                                        <Label Text="{Binding Status}"
+                                               TextColor="{DynamicResource TextColorSecondary}"
+                                               FontSize="12"
+                                               FontAttributes="Italic" />
+                                        <Label Text="{Binding RespondedAt, StringFormat='Beantwortet: {0:dd.MM.yyyy HH:mm}'}"
+                                               TextColor="{DynamicResource TextColorSecondary}"
+                                               FontSize="11" />
+                                    </VerticalStackLayout>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
