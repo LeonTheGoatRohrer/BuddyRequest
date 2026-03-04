@@ -3,46 +3,118 @@
     x:Class="Messanger.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:views="clr-namespace:Messanger.Views">
+    xmlns:views="clr-namespace:Messanger.Views"
+    FlyoutBackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource BackgroundDark}}"
+    FlyoutWidth="280"
+    Shell.FlyoutBehavior="Disabled">
 
-    <FlyoutItem Title="Login" Route="LoginPage">
-        <ShellContent Title="Login"
-                      ContentTemplate="{DataTemplate views:LoginPage}" />
-    </FlyoutItem>
+    <!-- Shell Styles -->
+    <Shell.Resources>
+        <Style TargetType="FlyoutItem">
+            <Setter Property="Shell.ForegroundColor" Value="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource Gray300}}" />
+            <Setter Property="Shell.TitleColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+            <Setter Property="Shell.BackgroundColor" Value="Transparent" />
+        </Style>
+        
+        <Style TargetType="TabBar">
+            <Setter Property="Shell.BackgroundColor" Value="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}" />
+            <Setter Property="Shell.ForegroundColor" Value="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+            <Setter Property="Shell.TitleColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+            <Setter Property="Shell.UnselectedColor" Value="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray500}}" />
+        </Style>
+    </Shell.Resources>
 
-    <FlyoutItem Title="Start" Route="MainPage">
+    <!-- Flyout Header -->
+    <Shell.FlyoutHeader>
+        <Grid HeightRequest="200" Padding="20">
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#6366F1" Offset="0.0" />
+                    <GradientStop Color="#8B5CF6" Offset="1.0" />
+                </LinearGradientBrush>
+            </Grid.Background>
+            
+            <VerticalStackLayout VerticalOptions="Center" Spacing="12">
+                <Border StrokeThickness="3" 
+                        Stroke="White" 
+                        WidthRequest="80" 
+                        HeightRequest="80"
+                        HorizontalOptions="Center"
+                        BackgroundColor="#FFFFFF30">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="40"/>
+                    </Border.StrokeShape>
+                    <Label Text="👤" 
+                           FontSize="40" 
+                           HorizontalOptions="Center" 
+                           VerticalOptions="Center"/>
+                </Border>
+                
+                <Label Text="BuddyRequest"
+                       FontSize="24"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       HorizontalOptions="Center" />
+                <Label Text="Deine Messenger-App"
+                       FontSize="13"
+                       TextColor="White"
+                       Opacity="0.85"
+                       HorizontalOptions="Center" />
+            </VerticalStackLayout>
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <!-- Login Page (Hidden, Initial Route) -->
+    <ShellContent Title="Login" 
+                  Route="LoginPage" 
+                  ContentTemplate="{DataTemplate views:LoginPage}"
+                  FlyoutItemIsVisible="False" />
+
+    <!-- Main Navigation Items -->
+    <FlyoutItem Title="🏠 Start" Route="MainPage" FlyoutDisplayOptions="AsMultipleItems">
         <ShellContent Title="Start"
+                      Icon="home.png"
                       ContentTemplate="{DataTemplate views:MainPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Freunde" Route="FriendsPage">
+    <FlyoutItem Title="👥 Freunde" Route="FriendsPage">
         <ShellContent Title="Freunde"
+                      Icon="friends.png"
                       ContentTemplate="{DataTemplate views:FriendsPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Profil" Route="ProfilPage">
+    <FlyoutItem Title="📬 Requests" Route="RequestsPage">
+        <ShellContent Title="Requests"
+                      Icon="requests.png"
+                      ContentTemplate="{DataTemplate views:RequestsPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="👤 Profil" Route="ProfilPage">
         <ShellContent Title="Profil"
+                      Icon="profile.png"
                       ContentTemplate="{DataTemplate views:ProfilPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Registrierung" Route="RegistrationPage">
-        <ShellContent Title="Registrierung"
-                      ContentTemplate="{DataTemplate views:RegistrationPage}" />
-    </FlyoutItem>
+    <!-- Separator -->
+    <MenuItem Text="──────────" 
+              IsEnabled="False" />
 
-    <FlyoutItem Title="Einstellungen" Route="SettingsPage">
-        <ShellContent Title="Einstellungen"
-                      ContentTemplate="{DataTemplate views:SettingsPage}" />
-    </FlyoutItem>
-
-    <FlyoutItem Title="Standorte" Route="MapPage">
+    <FlyoutItem Title="📍 Standorte" Route="MapPage">
         <ShellContent Title="Standorte"
+                      Icon="map.png"
                       ContentTemplate="{DataTemplate views:MapPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Requests" Route="RequestsPage">
-        <ShellContent Title="Requests"
-                      ContentTemplate="{DataTemplate views:RequestsPage}" />
+    <FlyoutItem Title="⚙️ Einstellungen" Route="SettingsPage">
+        <ShellContent Title="Einstellungen"
+                      Icon="settings.png"
+                      ContentTemplate="{DataTemplate views:SettingsPage}" />
     </FlyoutItem>
+
+    <!-- Hidden Items -->
+    <ShellContent Title="Registrierung" 
+                  Route="RegistrationPage" 
+                  ContentTemplate="{DataTemplate views:RegistrationPage}"
+                  FlyoutItemIsVisible="False" />
 
 </Shell>

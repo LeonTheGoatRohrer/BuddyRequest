@@ -4,334 +4,520 @@
              xmlns:vm="clr-namespace:Messanger.ViewModels"
              x:Class="Messanger.Views.RequestsPage"
              Title="Requests"
-             BackgroundColor="{DynamicResource BackgroundColor}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource BackgroundDark}}">
     <ContentPage.BindingContext>
         <vm:RequestsViewModel />
     </ContentPage.BindingContext>
     
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20">
+        <VerticalStackLayout Padding="16" Spacing="16">
+
+            <!-- Header Section -->
+            <Grid RowDefinitions="Auto,Auto" Padding="8,16">
+                <Label Grid.Row="0"
+                       Text="📬 Requests"
+                       FontSize="32"
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+                       HorizontalOptions="Start" />
+                <Label Grid.Row="1"
+                       Text="Verwalte deine Anfragen und Wünsche"
+                       FontSize="14"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                       HorizontalOptions="Start"
+                       Margin="0,4,0,0" />
+            </Grid>
 
             <!-- Status Message -->
-            <Label Text="{Binding StatusMessage}"
-                   TextColor="{DynamicResource TextColor}"
-                   FontSize="14"
-                   HorizontalOptions="Center"
-                   Margin="0,0,0,10" />
-
-            <!-- Request senden -->
-            <Frame BackgroundColor="{DynamicResource CardColor}"
-                   BorderColor="{DynamicResource BorderColor}"
-                   CornerRadius="10"
-                   Padding="15"
-                   HasShadow="True">
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="📤 Neuen Request senden"
-                           TextColor="{DynamicResource TextColor}"
-                           FontSize="20"
-                           FontAttributes="Bold" />
-
-                    <Button Text="👥 Freunde laden"
-                            Command="{Binding LoadFriendsCommand}"
-                            BackgroundColor="{DynamicResource SecondaryColor}"
-                            TextColor="White"
-                            CornerRadius="8"
-                            HeightRequest="45" />
-
-                    <Label Text="Freund auswählen:"
-                           TextColor="{DynamicResource TextColorSecondary}"
-                           FontSize="14" />
-
-                    <Picker ItemsSource="{Binding Friends}"
-                            ItemDisplayBinding="{Binding Username}"
-                            SelectedItem="{Binding SelectedFriend}"
-                            TextColor="{DynamicResource TextColor}"
-                            BackgroundColor="{DynamicResource SurfaceColor}"
-                            Title="Wähle einen Freund..." />
-
-                    <Label Text="Request-Typ:"
-                           TextColor="{DynamicResource TextColorSecondary}"
-                           FontSize="14" />
-
-                    <Picker ItemsSource="{Binding RequestTypes}"
-                            SelectedItem="{Binding RequestType}"
-                            TextColor="{DynamicResource TextColor}"
-                            BackgroundColor="{DynamicResource SurfaceColor}"
-                            Title="Wähle Typ..." />
-
-                    <Label Text="Nachricht:"
-                           TextColor="{DynamicResource TextColorSecondary}"
-                           FontSize="14" />
-
-                    <Editor Text="{Binding RequestMessage}"
-                            Placeholder="Beschreibe deine Anfrage..."
-                            HeightRequest="100"
-                            TextColor="{DynamicResource TextColor}"
-                            BackgroundColor="{DynamicResource SurfaceColor}"
-                            AutoSize="TextChanges" />
-
-                    <Button Text="✉️ Request senden"
-                            Command="{Binding SendRequestCommand}"
-                            Clicked="OnSendRequestClicked"
-                            BackgroundColor="{DynamicResource PrimaryColor}"
-                            TextColor="White"
-                            CornerRadius="8"
-                            HeightRequest="50"
-                            FontSize="16"
-                            FontAttributes="Bold" />
-                </VerticalStackLayout>
+            <Frame IsVisible="{Binding StatusMessage, Converter={StaticResource StringToBoolConverter}}"
+                   BackgroundColor="{AppThemeBinding Light={StaticResource Info}, Dark={StaticResource Info}}"
+                   CornerRadius="12"
+                   Padding="16"
+                   Margin="0,0,0,8"
+                   HasShadow="False"
+                   BorderColor="Transparent">
+                <Label Text="{Binding StatusMessage}"
+                       TextColor="White"
+                       FontSize="14"
+                       HorizontalOptions="Center" />
             </Frame>
 
-            <!-- Offene Anfragen (Pending) -->
-            <Frame BackgroundColor="{DynamicResource CardColor}"
-                   BorderColor="{DynamicResource BorderColor}"
-                   CornerRadius="10"
-                   Padding="15"
-                   HasShadow="True">
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="📬 Offene Anfragen an mich"
-                           TextColor="{DynamicResource TextColor}"
-                           FontSize="20"
-                           FontAttributes="Bold" />
+            <!-- Grid Layout: Request senden (links) | Offene Anfragen (rechts) -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+                
+                <!-- Request senden Card (linke Seite) -->
+                <Border Grid.Column="0"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
+                        Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
+                        StrokeThickness="1"
+                        Padding="0"
+                        Shadow="{Shadow Brush={StaticResource Gray400}, Offset='0,4', Radius=12, Opacity=0.15}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16"/>
+                    </Border.StrokeShape>
+                    
+                    <ScrollView>
+                        <VerticalStackLayout Spacing="16" Padding="20">
+                            <!-- Card Header -->
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Border Grid.Column="0"
+                                        Background="{StaticResource PrimaryGradient}"
+                                        WidthRequest="48"
+                                        HeightRequest="48"
+                                        StrokeThickness="0">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="12"/>
+                                    </Border.StrokeShape>
+                                    <Label Text="📤"
+                                           FontSize="24"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+                                </Border>
+                                
+                                <VerticalStackLayout Grid.Column="1" Padding="12,0,0,0" VerticalOptions="Center">
+                                    <Label Text="Request senden"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+                                           FontSize="18"
+                                           FontAttributes="Bold" />
+                                    <Label Text="An deine Freunde"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                                           FontSize="11" />
+                                </VerticalStackLayout>
+                            </Grid>
 
-                    <Button Text="🔄 Aktualisieren"
-                            Command="{Binding LoadPendingRequestsCommand}"
-                            BackgroundColor="{DynamicResource SecondaryColor}"
-                            TextColor="White"
-                            CornerRadius="8"
-                            HeightRequest="45" />
+                            <!-- Separator -->
+                            <BoxView HeightRequest="1"
+                                     BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
+                                     Margin="0,4" />
 
-                    <CollectionView ItemsSource="{Binding PendingRequests}">
-                        <CollectionView.EmptyView>
-                            <Label Text="Keine offenen Anfragen"
-                                   TextColor="{DynamicResource TextColorSecondary}"
-                                   FontSize="14"
+                            <Button Text="👥 Freunde laden"
+                                    Command="{Binding LoadFriendsCommand}"
+                                    Background="{StaticResource PrimaryGradient}"
+                                    TextColor="White"
+                                    CornerRadius="12"
+                                    HeightRequest="44"
+                                    FontSize="14"
+                                    FontAttributes="Bold"
+                                    Shadow="{Shadow Brush={StaticResource Primary}, Offset='0,4', Radius=12, Opacity=0.3}" />
+
+                            <Label Text="Freund auswählen"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource Gray300}}"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   Margin="0,4,0,0" />
+
+                            <Border BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource SurfaceDark}}"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                    StrokeThickness="1"
+                                    Padding="12,6">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10"/>
+                                </Border.StrokeShape>
+                                <Picker ItemsSource="{Binding Friends}"
+                                        ItemDisplayBinding="{Binding Username}"
+                                        SelectedItem="{Binding SelectedFriend}"
+                                        TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+                                        BackgroundColor="Transparent"
+                                        FontSize="14"
+                                        Title="Wähle einen Freund..." />
+                            </Border>
+
+                            <Label Text="Request-Typ"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource Gray300}}"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   Margin="0,4,0,0" />
+
+                            <Border BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource SurfaceDark}}"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                    StrokeThickness="1"
+                                    Padding="12,6">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10"/>
+                                </Border.StrokeShape>
+                                <Picker ItemsSource="{Binding RequestTypes}"
+                                        SelectedItem="{Binding RequestType}"
+                                        TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+                                        BackgroundColor="Transparent"
+                                        FontSize="14"
+                                        Title="Wähle Typ..." />
+                            </Border>
+
+                            <Label Text="Nachricht"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource Gray300}}"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   Margin="0,4,0,0" />
+
+                            <Border BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource SurfaceDark}}"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                    StrokeThickness="1"
+                                    Padding="12">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10"/>
+                                </Border.StrokeShape>
+                                <Editor Text="{Binding RequestMessage}"
+                                        Placeholder="Beschreibe deine Anfrage..."
+                                        HeightRequest="80"
+                                        TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+                                        PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                                        BackgroundColor="Transparent"
+                                        FontSize="14"
+                                        AutoSize="TextChanges" />
+                            </Border>
+
+                            <Button Text="✉️ Request senden"
+                                    Command="{Binding SendRequestCommand}"
+                                    Clicked="OnSendRequestClicked"
+                                    Background="{StaticResource PrimaryGradient}"
+                                    TextColor="White"
+                                    CornerRadius="12"
+                                    HeightRequest="52"
+                                    FontSize="15"
+                                    FontAttributes="Bold"
+                                    Margin="0,8,0,0"
+                                    Shadow="{Shadow Brush={StaticResource Primary}, Offset='0,6', Radius=16, Opacity=0.4}" />
+                        </VerticalStackLayout>
+                    </ScrollView>
+                </Border>
+
+                <!-- Offene Anfragen Card (rechte Seite) -->
+                <Border Grid.Column="1"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
+                        Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
+                        StrokeThickness="1"
+                        Padding="0"
+                        Shadow="{Shadow Brush={StaticResource Gray400}, Offset='0,4', Radius=12, Opacity=0.15}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16"/>
+                    </Border.StrokeShape>
+                    
+                    <VerticalStackLayout Spacing="16" Padding="20">
+                        <!-- Card Header -->
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Border Grid.Column="0"
+                                    BackgroundColor="{StaticResource Success}"
+                                    WidthRequest="48"
+                                    HeightRequest="48"
+                                    StrokeThickness="0">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12"/>
+                                </Border.StrokeShape>
+                                <Label Text="📬"
+                                       FontSize="24"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                            </Border>
+                            
+                            <VerticalStackLayout Grid.Column="1" Padding="12,0,0,0" VerticalOptions="Center">
+                                <Label Text="Offene Anfragen"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+                                       FontSize="18"
+                                       FontAttributes="Bold" />
+                                <Label Text="Warten auf Antwort"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                                       FontSize="11" />
+                            </VerticalStackLayout>
+
+                            <Button Grid.Column="2"
+                                    Text="🔄"
+                                    Command="{Binding LoadPendingRequestsCommand}"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray700}}"
+                                    TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource Gray300}}"
+                                    CornerRadius="10"
+                                    WidthRequest="40"
+                                    HeightRequest="40"
+                                    FontSize="16"
+                                    Padding="0"
+                                    VerticalOptions="Center" />
+                        </Grid>
+
+                        <!-- Separator -->
+                        <BoxView HeightRequest="1"
+                                 BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
+                                 Margin="0,4" />
+
+                        <!-- Scrollable List -->
+                        <ScrollView VerticalOptions="FillAndExpand">
+                            <CollectionView ItemsSource="{Binding PendingRequests}">
+                                <CollectionView.EmptyView>
+                                    <VerticalStackLayout Padding="24" Spacing="12" HorizontalOptions="Center">
+                                        <Label Text="✨"
+                                               FontSize="48"
+                                               HorizontalOptions="Center" />
+                                        <Label Text="Keine offenen Anfragen"
+                                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
+                                               FontSize="14"
+                                               FontAttributes="Bold"
+                                               HorizontalOptions="Center" />
+                                        <Label Text="Neue Anfragen erscheinen hier"
+                                               TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                                               FontSize="12"
+                                               HorizontalOptions="Center"
+                                               HorizontalTextAlignment="Center" />
+                                    </VerticalStackLayout>
+                                </CollectionView.EmptyView>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource SurfaceDark}}"
+                                                Stroke="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}"
+                                                StrokeThickness="2"
+                                                Padding="12"
+                                                Margin="0,6">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="12"/>
+                                            </Border.StrokeShape>
+                                            
+                                            <Grid RowDefinitions="Auto,Auto" RowSpacing="10">
+                                                <!-- Hauptbereich: Avatar+Info links, Nachricht rechts -->
+                                                <Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                                    <!-- Linke Seite: Avatar + User Info -->
+                                                    <VerticalStackLayout Grid.Column="0" Spacing="8">
+                                                        <Border StrokeThickness="2"
+                                                                Stroke="{StaticResource Success}"
+                                                                WidthRequest="64"
+                                                                HeightRequest="64">
+                                                            <Border.StrokeShape>
+                                                                <RoundRectangle CornerRadius="32"/>
+                                                            </Border.StrokeShape>
+                                                            <Image Source="{Binding SenderAvatarUrl}"
+                                                                   Aspect="AspectFill" />
+                                                        </Border>
+
+                                                        <Label Text="{Binding SenderUsername}"
+                                                               TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+                                                               FontAttributes="Bold"
+                                                               FontSize="15"
+                                                               HorizontalOptions="Center" />
+                                                        
+                                                        <Border BackgroundColor="{StaticResource Primary}"
+                                                                Padding="6,3"
+                                                                HorizontalOptions="Center">
+                                                            <Border.StrokeShape>
+                                                                <RoundRectangle CornerRadius="5"/>
+                                                            </Border.StrokeShape>
+                                                            <Label Text="{Binding RequestType}"
+                                                                   TextColor="White"
+                                                                   FontSize="10"
+                                                                   FontAttributes="Bold" />
+                                                        </Border>
+                                                        
+                                                        <Label Text="{Binding CreatedAt, StringFormat='📅 {0:dd.MM HH:mm}'}"
+                                                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
+                                                               FontSize="10"
+                                                               HorizontalOptions="Center" />
+                                                    </VerticalStackLayout>
+
+                                                    <!-- Rechte Seite: Großes Nachricht-Textfeld -->
+                                                    <Border Grid.Column="1"
+                                                            BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
+                                                            Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                                            StrokeThickness="1"
+                                                            Padding="12"
+                                                            VerticalOptions="Fill">
+                                                        <Border.StrokeShape>
+                                                            <RoundRectangle CornerRadius="10"/>
+                                                        </Border.StrokeShape>
+                                                        <ScrollView>
+                                                            <Label Text="{Binding Message}"
+                                                                   TextColor="{AppThemeBinding Light={StaticResource Gray800}, Dark={StaticResource Gray200}}"
+                                                                   FontSize="14"
+                                                                   LineBreakMode="WordWrap" />
+                                                        </ScrollView>
+                                                    </Border>
+                                                </Grid>
+
+                                                <!-- Action Buttons -->
+                                                <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="8" Margin="0,4,0,0">
+                                                    <Button Grid.Column="0"
+                                                            Text="✓ Accept"
+                                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AcceptRequestCommand}"
+                                                            CommandParameter="{Binding .}"
+                                                            Background="{StaticResource SuccessGradient}"
+                                                            TextColor="White"
+                                                            HeightRequest="44"
+                                                            CornerRadius="10"
+                                                            FontSize="14"
+                                                            FontAttributes="Bold"
+                                                            Shadow="{Shadow Brush={StaticResource Success}, Offset='0,3', Radius=8, Opacity=0.4}" />
+                                                    <Button Grid.Column="1"
+                                                            Text="✗ Decline"
+                                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeclineRequestCommand}"
+                                                            CommandParameter="{Binding .}"
+                                                            Background="{StaticResource DangerGradient}"
+                                                            TextColor="White"
+                                                            HeightRequest="44"
+                                                            CornerRadius="10"
+                                                            FontSize="14"
+                                                            FontAttributes="Bold"
+                                                            Shadow="{Shadow Brush={StaticResource Danger}, Offset='0,3', Radius=8, Opacity=0.4}" />
+                                                </Grid>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </ScrollView>
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+
+            <!-- Gesendete Requests (volle Breite unten) -->
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
+                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
+                    StrokeThickness="1"
+                    Padding="0"
+                    Shadow="{Shadow Brush={StaticResource Gray400}, Offset='0,4', Radius=12, Opacity=0.15}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16"/>
+                </Border.StrokeShape>
+                
+                <VerticalStackLayout Spacing="16" Padding="20">
+                    <!-- Card Header -->
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <Border Grid.Column="0"
+                                BackgroundColor="{StaticResource Info}"
+                                WidthRequest="48"
+                                HeightRequest="48"
+                                StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12"/>
+                            </Border.StrokeShape>
+                            <Label Text="📨"
+                                   FontSize="24"
                                    HorizontalOptions="Center"
-                                   Margin="0,20,0,0" />
-                        </CollectionView.EmptyView>
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Frame BackgroundColor="{DynamicResource SurfaceColor}"
-                                       BorderColor="{DynamicResource PrimaryColor}"
-                                       CornerRadius="8"
-                                       Padding="12"
-                                       Margin="0,5"
-                                       HasShadow="True">
-                                    <Grid ColumnDefinitions="60,*,Auto" RowSpacing="5">
-                                        <!-- Avatar -->
-                                        <Image Source="{Binding SenderAvatarUrl}"
-                                               WidthRequest="55"
-                                               HeightRequest="55"
-                                               Aspect="AspectFill"
-                                               Grid.Column="0"
-                                               Grid.RowSpan="4">
-                                            <Image.Clip>
-                                                <EllipseGeometry Center="27.5,27.5" RadiusX="27.5" RadiusY="27.5"/>
-                                            </Image.Clip>
-                                        </Image>
+                                   VerticalOptions="Center" />
+                        </Border>
+                        
+                        <VerticalStackLayout Grid.Column="1" Padding="12,0,0,0" VerticalOptions="Center">
+                            <Label Text="Gesendete Requests"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+                                   FontSize="20"
+                                   FontAttributes="Bold" />
+                            <Label Text="Deine versendeten Anfragen"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                                   FontSize="12" />
+                        </VerticalStackLayout>
 
-                                        <!-- Infos -->
-                                        <VerticalStackLayout Grid.Column="1" Padding="10,0" Spacing="3">
-                                            <Label Text="{Binding SenderUsername}"
-                                                   TextColor="{DynamicResource TextColor}"
-                                                   FontAttributes="Bold"
-                                                   FontSize="16" />
-                                            <Label Text="{Binding RequestType}"
-                                                   TextColor="{DynamicResource PrimaryColor}"
-                                                   FontSize="14"
-                                                   FontAttributes="Bold" />
-                                            <Label Text="{Binding Message}"
-                                                   TextColor="{DynamicResource TextColorSecondary}"
-                                                   FontSize="13"
-                                                   LineBreakMode="WordWrap" />
-                                            <Label Text="{Binding CreatedAt, StringFormat='{0:dd.MM.yyyy HH:mm}'}"
-                                                   TextColor="{DynamicResource TextColorSecondary}"
-                                                   FontSize="11" />
-                                        </VerticalStackLayout>
+                        <Button Grid.Column="2"
+                                Text="🔄"
+                                Command="{Binding LoadSentRequestsCommand}"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray700}}"
+                                TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource Gray300}}"
+                                CornerRadius="10"
+                                WidthRequest="44"
+                                HeightRequest="44"
+                                FontSize="18"
+                                VerticalOptions="Center" />
+                    </Grid>
 
-                                        <!-- Buttons -->
-                                        <VerticalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center">
-                                            <Button Text="✓"
-                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AcceptRequestCommand}"
-                                                    CommandParameter="{Binding .}"
-                                                    BackgroundColor="#34C759"
-                                                    TextColor="White"
-                                                    WidthRequest="55"
-                                                    HeightRequest="40"
-                                                    CornerRadius="8"
-                                                    FontSize="18"
-                                                    FontAttributes="Bold" />
-                                            <Button Text="✗"
-                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeclineRequestCommand}"
-                                                    CommandParameter="{Binding .}"
-                                                    BackgroundColor="#FF3B30"
-                                                    TextColor="White"
-                                                    WidthRequest="55"
-                                                    HeightRequest="40"
-                                                    CornerRadius="8"
-                                                    FontSize="18"
-                                                    FontAttributes="Bold" />
-                                        </VerticalStackLayout>
-                                    </Grid>
-                                </Frame>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </VerticalStackLayout>
-            </Frame>
-
-            <!-- Gesendete Requests -->
-            <Frame BackgroundColor="{DynamicResource CardColor}"
-                   BorderColor="{DynamicResource BorderColor}"
-                   CornerRadius="10"
-                   Padding="15"
-                   HasShadow="True">
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="📨 Meine gesendeten Requests"
-                           TextColor="{DynamicResource TextColor}"
-                           FontSize="20"
-                           FontAttributes="Bold" />
-
-                    <Button Text="🔄 Aktualisieren"
-                            Command="{Binding LoadSentRequestsCommand}"
-                            BackgroundColor="{DynamicResource SecondaryColor}"
-                            TextColor="White"
-                            CornerRadius="8"
-                            HeightRequest="45" />
+                    <!-- Separator -->
+                    <BoxView HeightRequest="1"
+                             BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
+                             Margin="0,8" />
 
                     <CollectionView ItemsSource="{Binding SentRequests}">
                         <CollectionView.EmptyView>
-                            <Label Text="Keine gesendeten Requests"
-                                   TextColor="{DynamicResource TextColorSecondary}"
-                                   FontSize="14"
-                                   HorizontalOptions="Center"
-                                   Margin="0,20,0,0" />
+                            <VerticalStackLayout Padding="24" Spacing="12" HorizontalOptions="Center">
+                                <Label Text="📭"
+                                       FontSize="48"
+                                       HorizontalOptions="Center" />
+                                <Label Text="Keine gesendeten Requests"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       HorizontalOptions="Center" />
+                                <Label Text="Sende deinen ersten Request an einen Freund"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                                       FontSize="13"
+                                       HorizontalOptions="Center" />
+                            </VerticalStackLayout>
                         </CollectionView.EmptyView>
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <Frame BackgroundColor="{DynamicResource SurfaceColor}"
-                                       BorderColor="{DynamicResource BorderColor}"
-                                       CornerRadius="8"
-                                       Padding="12"
-                                       Margin="0,5"
-                                       HasShadow="True">
-                                    <Grid ColumnDefinitions="60,*,Auto">
-                                        <Image Source="{Binding ReceiverAvatarUrl}"
-                                               WidthRequest="55"
-                                               HeightRequest="55"
-                                               Aspect="AspectFill"
-                                               Grid.Column="0">
-                                            <Image.Clip>
-                                                <EllipseGeometry Center="27.5,27.5" RadiusX="27.5" RadiusY="27.5"/>
-                                            </Image.Clip>
-                                        </Image>
+                                <Border BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource SurfaceDark}}"
+                                        Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                        StrokeThickness="1"
+                                        Padding="16"
+                                        Margin="0,8">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="12"/>
+                                    </Border.StrokeShape>
+                                    
+                                    <Grid ColumnDefinitions="64,*,Auto">
+                                        <!-- Avatar -->
+                                        <Border Grid.Column="0"
+                                                StrokeThickness="2"
+                                                Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                                WidthRequest="64"
+                                                HeightRequest="64">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="32"/>
+                                            </Border.StrokeShape>
+                                            <Image Source="{Binding ReceiverAvatarUrl}"
+                                                   Aspect="AspectFill" />
+                                        </Border>
 
-                                        <VerticalStackLayout Grid.Column="1" Padding="10,0" Spacing="3">
+                                        <VerticalStackLayout Grid.Column="1" Padding="12,0" Spacing="4" VerticalOptions="Center">
                                             <Label Text="{Binding ReceiverUsername}"
-                                                   TextColor="{DynamicResource TextColor}"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
                                                    FontAttributes="Bold"
-                                                   FontSize="16" />
-                                            <Label Text="{Binding RequestType}"
-                                                   TextColor="{DynamicResource PrimaryColor}"
-                                                   FontSize="14"
-                                                   FontAttributes="Bold" />
+                                                   FontSize="17" />
+                                            
+                                            <Border BackgroundColor="{StaticResource Info}"
+                                                    Padding="8,4"
+                                                    HorizontalOptions="Start">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="6"/>
+                                                </Border.StrokeShape>
+                                                <Label Text="{Binding RequestType}"
+                                                       TextColor="White"
+                                                       FontSize="12"
+                                                       FontAttributes="Bold" />
+                                            </Border>
+                                            
                                             <Label Text="{Binding Message}"
-                                                   TextColor="{DynamicResource TextColorSecondary}"
-                                                   FontSize="13"
-                                                   LineBreakMode="WordWrap" />
-                                            <Label Text="{Binding Status}"
-                                                   TextColor="{DynamicResource TextColorSecondary}"
-                                                   FontSize="12"
-                                                   FontAttributes="Italic" />
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource Gray300}}"
+                                                   FontSize="14"
+                                                   LineBreakMode="WordWrap"
+                                                   MaxLines="2" />
                                         </VerticalStackLayout>
 
                                         <!-- Status Badge -->
-                                        <Label Grid.Column="2"
-                                               Text="{Binding Status}"
-                                               TextColor="White"
-                                               FontSize="11"
-                                               FontAttributes="Bold"
-                                               Padding="8,4"
-                                               VerticalOptions="Start"
-                                               HorizontalOptions="End">
-                                            <Label.Triggers>
-                                                <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="Pending">
-                                                    <Setter Property="BackgroundColor" Value="#FF9500" />
+                                        <Border Grid.Column="2"
+                                                VerticalOptions="Start"
+                                                Padding="10,6"
+                                                Margin="0,8,0,0">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="8"/>
+                                            </Border.StrokeShape>
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding Status}" Value="Pending">
+                                                    <Setter Property="BackgroundColor" Value="{StaticResource Warning}" />
                                                 </DataTrigger>
-                                                <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="Accepted">
-                                                    <Setter Property="BackgroundColor" Value="#34C759" />
+                                                <DataTrigger TargetType="Border" Binding="{Binding Status}" Value="Accepted">
+                                                    <Setter Property="BackgroundColor" Value="{StaticResource Success}" />
                                                 </DataTrigger>
-                                                <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="Declined">
-                                                    <Setter Property="BackgroundColor" Value="#FF3B30" />
+                                                <DataTrigger TargetType="Border" Binding="{Binding Status}" Value="Declined">
+                                                    <Setter Property="BackgroundColor" Value="{StaticResource Danger}" />
                                                 </DataTrigger>
-                                            </Label.Triggers>
-                                        </Label>
+                                            </Border.Triggers>
+                                            <Label Text="{Binding Status}"
+                                                   TextColor="White"
+                                                   FontSize="11"
+                                                   FontAttributes="Bold"
+                                                   HorizontalOptions="Center" />
+                                        </Border>
                                     </Grid>
-                                </Frame>
+                                </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
-            <!-- History -->
-            <Frame BackgroundColor="{DynamicResource CardColor}"
-                   BorderColor="{DynamicResource BorderColor}"
-                   CornerRadius="10"
-                   Padding="15"
-                   HasShadow="True">
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="📜 Request-Verlauf"
-                           TextColor="{DynamicResource TextColor}"
-                           FontSize="20"
-                           FontAttributes="Bold" />
-
-                    <Button Text="🔄 Aktualisieren"
-                            Command="{Binding LoadHistoryCommand}"
-                            BackgroundColor="{DynamicResource SecondaryColor}"
-                            TextColor="White"
-                            CornerRadius="8"
-                            HeightRequest="45" />
-
-                    <CollectionView ItemsSource="{Binding History}">
-                        <CollectionView.EmptyView>
-                            <Label Text="Keine History vorhanden"
-                                   TextColor="{DynamicResource TextColorSecondary}"
-                                   FontSize="14"
-                                   HorizontalOptions="Center"
-                                   Margin="0,20,0,0" />
-                        </CollectionView.EmptyView>
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Frame BackgroundColor="{DynamicResource SurfaceColor}"
-                                       BorderColor="{DynamicResource BorderColor}"
-                                       CornerRadius="8"
-                                       Padding="12"
-                                       Margin="0,5"
-                                       HasShadow="True">
-                                    <VerticalStackLayout Spacing="4">
-                                        <Label Text="{Binding RequestType}"
-                                               TextColor="{DynamicResource PrimaryColor}"
-                                               FontAttributes="Bold"
-                                               FontSize="15" />
-                                        <Label Text="{Binding Message}"
-                                               TextColor="{DynamicResource TextColor}"
-                                               FontSize="13"
-                                               LineBreakMode="WordWrap" />
-                                        <Label Text="{Binding Status}"
-                                               TextColor="{DynamicResource TextColorSecondary}"
-                                               FontSize="12"
-                                               FontAttributes="Italic" />
-                                        <Label Text="{Binding RespondedAt, StringFormat='Beantwortet: {0:dd.MM.yyyy HH:mm}'}"
-                                               TextColor="{DynamicResource TextColorSecondary}"
-                                               FontSize="11" />
-                                    </VerticalStackLayout>
-                                </Frame>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </VerticalStackLayout>
-            </Frame>
+            <!-- Bottom Spacing -->
+            <BoxView HeightRequest="20" BackgroundColor="Transparent" />
 
         </VerticalStackLayout>
     </ScrollView>

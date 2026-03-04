@@ -4,44 +4,277 @@
              xmlns:helpers="clr-namespace:Messanger.Helpers"
              x:Class="Messanger.Views.MainPage"
              Title="{helpers:Translate Key=Nav_Home}"
-             BackgroundColor="{DynamicResource BackgroundColor}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource BackgroundDark}}">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20">
-            <Label FontSize="36"
-                   HorizontalOptions="Center"
-                   TextColor="{DynamicResource TextColor}"
-                   FontAttributes="Bold">
-                <Label.Text>
-                    <MultiBinding StringFormat="Hallo, {0}">
-                        <Binding Path="Username" />
-                    </MultiBinding>
-                </Label.Text>
-            </Label>
+        <VerticalStackLayout Padding="16" Spacing="20">
             
-            <Frame BackgroundColor="{DynamicResource SurfaceColor}" CornerRadius="15" Padding="20">
-                <VerticalStackLayout>
-                    <Label Text="{helpers:Translate Key=Main_Stats}" FontSize="24" FontAttributes="Bold" TextColor="{DynamicResource TextColorSecondary}"/>
-                    <Label FontSize="14" TextColor="{DynamicResource TextColorSecondary}">
-                        <Label.Text>
-                            <MultiBinding StringFormat="Alle User: {0}">
-                                <Binding Path="UserCount" />
-                            </MultiBinding>
-                        </Label.Text>
-                    </Label>
-                    <Label FontSize="14" TextColor="{DynamicResource TextColorSecondary}">
-                        <Label.Text>
-                            <MultiBinding StringFormat="Deine Freunde: {0}">
-                                <Binding Path="FriendsCount" />
-                            </MultiBinding>
-                        </Label.Text>
-                    </Label>
+            <!-- Welcome Header -->
+            <VerticalStackLayout Spacing="8" Padding="8,20,8,8">
+                <Label Text="👋"
+                       FontSize="48"
+                       HorizontalOptions="Center" />
+                <Label FontSize="36"
+                       HorizontalOptions="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Center">
+                    <Label.Text>
+                        <MultiBinding StringFormat="Hallo, {0}!">
+                            <Binding Path="Username" />
+                        </MultiBinding>
+                    </Label.Text>
+                </Label>
+                <Label Text="Willkommen zurück"
+                       FontSize="16"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                       HorizontalOptions="Center" />
+            </VerticalStackLayout>
+            
+            <!-- Stats Card mit dunklerem Hintergrund für besseren Kontrast -->
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
+                    Stroke="Transparent"
+                    StrokeThickness="0"
+                    Padding="24"
+                    Shadow="{Shadow Brush={StaticResource Gray400}, Offset='0,4', Radius=16, Opacity=0.15}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="20"/>
+                </Border.StrokeShape>
+                
+                <!-- Gradient Overlay mit besseren Farben -->
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#4F46E5" Offset="0.0" />
+                        <GradientStop Color="#7C3AED" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Border.Background>
+                
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="📊 Deine Statistiken" 
+                           FontSize="22" 
+                           FontAttributes="Bold" 
+                           TextColor="White" />
+                    
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="16" RowDefinitions="Auto,Auto">
+                        <!-- User Count - Dunkler Hintergrund -->
+                        <Border Grid.Column="0" Grid.Row="0"
+                                BackgroundColor="#312E81"
+                                Padding="16"
+                                StrokeThickness="1"
+                                Stroke="#4338CA">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12"/>
+                            </Border.StrokeShape>
+                            <Border.Shadow>
+                                <Shadow Brush="Black" Offset="0,2" Radius="8" Opacity="0.3" />
+                            </Border.Shadow>
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="👥" FontSize="32" HorizontalOptions="Center" />
+                                <Label FontSize="36" 
+                                       FontAttributes="Bold" 
+                                       TextColor="White"
+                                       HorizontalOptions="Center">
+                                    <Label.Text>
+                                        <Binding Path="UserCount" />
+                                    </Label.Text>
+                                </Label>
+                                <Label Text="User gesamt" 
+                                       FontSize="13" 
+                                       TextColor="White"
+                                       Opacity="0.95"
+                                       HorizontalOptions="Center"
+                                       FontAttributes="Bold" />
+                            </VerticalStackLayout>
+                        </Border>
+                        
+                        <!-- Friends Count - Dunkler Hintergrund -->
+                        <Border Grid.Column="1" Grid.Row="0"
+                                BackgroundColor="#312E81"
+                                Padding="16"
+                                StrokeThickness="1"
+                                Stroke="#4338CA">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12"/>
+                            </Border.StrokeShape>
+                            <Border.Shadow>
+                                <Shadow Brush="Black" Offset="0,2" Radius="8" Opacity="0.3" />
+                            </Border.Shadow>
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="🤝" FontSize="32" HorizontalOptions="Center" />
+                                <Label FontSize="36" 
+                                       FontAttributes="Bold" 
+                                       TextColor="White"
+                                       HorizontalOptions="Center">
+                                    <Label.Text>
+                                        <Binding Path="FriendsCount" />
+                                    </Label.Text>
+                                </Label>
+                                <Label Text="Deine Freunde" 
+                                       FontSize="13" 
+                                       TextColor="White"
+                                       Opacity="0.95"
+                                       HorizontalOptions="Center"
+                                       FontAttributes="Bold" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
                 </VerticalStackLayout>
-            </Frame>
+            </Border>
 
-            <Button Text="{helpers:Translate Key=Main_Chats}" BackgroundColor="#007AFF" TextColor="White" Clicked="OnChatsClicked"/>
-            <Button Text="{helpers:Translate Key=Main_Friends}" BackgroundColor="#007AFF" TextColor="White" Clicked="OnFriendsClicked"/>
-            <Button Text="{helpers:Translate Key=Main_Profile}" BackgroundColor="#007AFF" TextColor="White" Clicked="OnProfilClicked"/>
+            <!-- Quick Actions -->
+            <Label Text="🚀 Schnellzugriff"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+                   Margin="8,8,8,8" />
+
+            <!-- Requests Button (ersetzt Chats) -->
+            <Border Background="{StaticResource PrimaryGradient}"
+                    StrokeThickness="0"
+                    Padding="20"
+                    Shadow="{Shadow Brush={StaticResource Primary}, Offset='0,6', Radius=16, Opacity=0.4}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16"/>
+                </Border.StrokeShape>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnRequestsClicked" />
+                </Border.GestureRecognizers>
+                
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Border Grid.Column="0"
+                            BackgroundColor="#FFFFFF30"
+                            WidthRequest="56"
+                            HeightRequest="56"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="14"/>
+                        </Border.StrokeShape>
+                        <Label Text="📬"
+                               FontSize="28"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                    </Border>
+                    
+                    <VerticalStackLayout Grid.Column="1" 
+                                         Padding="16,0,0,0" 
+                                         VerticalOptions="Center">
+                        <Label Text="Requests"
+                               TextColor="White"
+                               FontSize="18"
+                               FontAttributes="Bold" />
+                        <Label Text="Verwalte deine Anfragen"
+                               TextColor="White"
+                               Opacity="0.85"
+                               FontSize="13" />
+                    </VerticalStackLayout>
+                    
+                    <Label Grid.Column="2"
+                           Text="›"
+                           TextColor="White"
+                           FontSize="32"
+                           VerticalOptions="Center" />
+                </Grid>
+            </Border>
+
+            <!-- Friends Button -->
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
+                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
+                    StrokeThickness="1"
+                    Padding="20"
+                    Shadow="{Shadow Brush={StaticResource Gray400}, Offset='0,4', Radius=12, Opacity=0.12}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16"/>
+                </Border.StrokeShape>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnFriendsClicked" />
+                </Border.GestureRecognizers>
+                
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Border Grid.Column="0"
+                            Background="{StaticResource SuccessGradient}"
+                            WidthRequest="56"
+                            HeightRequest="56"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="14"/>
+                        </Border.StrokeShape>
+                        <Label Text="👥"
+                               FontSize="28"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                    </Border>
+                    
+                    <VerticalStackLayout Grid.Column="1" 
+                                         Padding="16,0,0,0" 
+                                         VerticalOptions="Center">
+                        <Label Text="{helpers:Translate Key=Main_Friends}"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+                               FontSize="18"
+                               FontAttributes="Bold" />
+                        <Label Text="Verwalte deine Kontakte"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                               FontSize="13" />
+                    </VerticalStackLayout>
+                    
+                    <Label Grid.Column="2"
+                           Text="›"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                           FontSize="32"
+                           VerticalOptions="Center" />
+                </Grid>
+            </Border>
+
+            <!-- Profile Button -->
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
+                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
+                    StrokeThickness="1"
+                    Padding="20"
+                    Shadow="{Shadow Brush={StaticResource Gray400}, Offset='0,4', Radius=12, Opacity=0.12}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16"/>
+                </Border.StrokeShape>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnProfilClicked" />
+                </Border.GestureRecognizers>
+                
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Border Grid.Column="0"
+                            BackgroundColor="{StaticResource Tertiary}"
+                            WidthRequest="56"
+                            HeightRequest="56"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="14"/>
+                        </Border.StrokeShape>
+                        <Label Text="👤"
+                               FontSize="28"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                    </Border>
+                    
+                    <VerticalStackLayout Grid.Column="1" 
+                                         Padding="16,0,0,0" 
+                                         VerticalOptions="Center">
+                        <Label Text="{helpers:Translate Key=Main_Profile}"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+                               FontSize="18"
+                               FontAttributes="Bold" />
+                        <Label Text="Bearbeite dein Profil"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                               FontSize="13" />
+                    </VerticalStackLayout>
+                    
+                    <Label Grid.Column="2"
+                           Text="›"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                           FontSize="32"
+                           VerticalOptions="Center" />
+                </Grid>
+            </Border>
+
+            <!-- Bottom Spacing -->
+            <BoxView HeightRequest="20" BackgroundColor="Transparent" />
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

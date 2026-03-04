@@ -4,93 +4,202 @@
              xmlns:helpers="clr-namespace:Messanger.Helpers"
              x:Class="Messanger.Views.LoginPage"
              Title="{helpers:Translate Key=Login_Title}"
-             BackgroundColor="{DynamicResource BackgroundColor}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource BackgroundDark}}">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="16">
+        <VerticalStackLayout Padding="24" Spacing="24">
 
-            <!-- App Logo / Avatar -->
-            <Border StrokeThickness="0"
-                    WidthRequest="100"
-                    HeightRequest="100"
-                    HorizontalOptions="Center"
-                    Margin="0,20,0,10"
-                    BackgroundColor="#007AFF">
+            <!-- Hero Section with Gradient -->
+            <VerticalStackLayout Spacing="12" Padding="0,40,0,24">
+                <!-- Logo/Icon with Gradient Background -->
+                <Border StrokeThickness="0"
+                        WidthRequest="120"
+                        HeightRequest="120"
+                        HorizontalOptions="Center">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="30"/>
+                    </Border.StrokeShape>
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#6366F1" Offset="0.0" />
+                            <GradientStop Color="#8B5CF6" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.Shadow>
+                        <Shadow Brush="{StaticResource Primary}" 
+                                Offset="0,8" 
+                                Radius="24" 
+                                Opacity="0.4" />
+                    </Border.Shadow>
+                    <Label Text="👋" 
+                           FontSize="64" 
+                           HorizontalOptions="Center" 
+                           VerticalOptions="Center"/>
+                </Border>
+
+                <Label Text="{helpers:Translate Key=Login_Title}"
+                       FontSize="32"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+                
+                <Label Text="Willkommen zurück!"
+                       FontSize="16"
+                       HorizontalOptions="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+            </VerticalStackLayout>
+
+            <!-- Login Card -->
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
+                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
+                    StrokeThickness="1"
+                    Padding="24"
+                    Shadow="{Shadow Brush={StaticResource Gray400}, Offset='0,4', Radius=16, Opacity=0.15}">
                 <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="50"/>
+                    <RoundRectangle CornerRadius="20"/>
                 </Border.StrokeShape>
-                <Label Text="👋" 
-                       FontSize="48" 
-                       HorizontalOptions="Center" 
-                       VerticalOptions="Center"/>
+                
+                <VerticalStackLayout Spacing="20">
+                    <!-- Username Field -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="{helpers:Translate Key=Login_Username}"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource Gray300}}" />
+                        <Border BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource SurfaceDark}}"
+                                Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                StrokeThickness="1"
+                                Padding="16,14">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12"/>
+                            </Border.StrokeShape>
+                            <Entry Placeholder="{helpers:Translate Key=Login_Username}"
+                                   Text="{Binding Username}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+                                   PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                                   BackgroundColor="Transparent"
+                                   FontSize="15" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Password Field -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="{helpers:Translate Key=Login_Password}"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource Gray300}}" />
+                        <Border BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource SurfaceDark}}"
+                                Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                StrokeThickness="1"
+                                Padding="16,14">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12"/>
+                            </Border.StrokeShape>
+                            <Entry Placeholder="{helpers:Translate Key=Login_Password}"
+                                   IsPassword="True"
+                                   Text="{Binding Password}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+                                   PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                                   BackgroundColor="Transparent"
+                                   FontSize="15" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Error Message -->
+                    <Border IsVisible="{Binding Message, Converter={StaticResource StringToBoolConverter}}"
+                            BackgroundColor="{StaticResource Danger}"
+                            StrokeThickness="0"
+                            Padding="12">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8"/>
+                        </Border.StrokeShape>
+                        <Label Text="{Binding Message}"
+                               TextColor="White"
+                               FontSize="13"
+                               HorizontalOptions="Center" />
+                    </Border>
+
+                    <!-- Loading Indicator -->
+                    <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                       IsVisible="{Binding IsBusy}"
+                                       Color="{StaticResource Primary}"
+                                       WidthRequest="32"
+                                       HeightRequest="32"
+                                       HorizontalOptions="Center" />
+
+                    <!-- Login Button -->
+                    <Button Text="{helpers:Translate Key=Login_Button}"
+                            Command="{Binding LoginCommand}"
+                            Background="{StaticResource PrimaryGradient}"
+                            TextColor="White"
+                            CornerRadius="12"
+                            HeightRequest="56"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            Shadow="{Shadow Brush={StaticResource Primary}, Offset='0,6', Radius=16, Opacity=0.4}" />
+                </VerticalStackLayout>
             </Border>
 
-            <Label Text="{helpers:Translate Key=Login_Title}"
-                   FontSize="24"
-                   HorizontalOptions="Center"
-                   Margin="0,0,0,10"
-                   TextColor="{DynamicResource TextColor}" />
+            <!-- Demo Login Section -->
+            <VerticalStackLayout Spacing="12">
+                <Label Text="{helpers:Translate Key=Login_DemoLogin}" 
+                       FontSize="14" 
+                       FontAttributes="Bold" 
+                       HorizontalOptions="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource Gray300}}" />
 
-            <Label Text="{helpers:Translate Key=Login_Username}"
-                   TextColor="{DynamicResource TextColor}" />
-            <Entry Placeholder="{helpers:Translate Key=Login_Username}"
-                   Text="{Binding Username}"
-                   TextColor="{DynamicResource TextColor}"
-                   PlaceholderColor="{DynamicResource TextColorSecondary}"
-                   BackgroundColor="{DynamicResource SurfaceColor}" />
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <Button Grid.Column="0"
+                            Text="👤 LeonROhrer"
+                            Command="{Binding DemoLoginCommand}"
+                            Background="{StaticResource SuccessGradient}"
+                            TextColor="White"
+                            CornerRadius="12"
+                            HeightRequest="52"
+                            FontSize="14"
+                            FontAttributes="Bold"
+                            Shadow="{Shadow Brush={StaticResource Success}, Offset='0,4', Radius=12, Opacity=0.3}" />
+                    
+                    <Button Grid.Column="1"
+                            Text="👤 FranzSepp"
+                            Command="{Binding DemoLoginFranzCommand}"
+                            BackgroundColor="{StaticResource Warning}"
+                            TextColor="White"
+                            CornerRadius="12"
+                            HeightRequest="52"
+                            FontSize="14"
+                            FontAttributes="Bold"
+                            Shadow="{Shadow Brush={StaticResource Warning}, Offset='0,4', Radius=12, Opacity=0.3}" />
+                </Grid>
+            </VerticalStackLayout>
 
-            <Label Text="{helpers:Translate Key=Login_Password}"
-                   TextColor="{DynamicResource TextColor}" />
-            <Entry Placeholder="{helpers:Translate Key=Login_Password}"
-                   IsPassword="True"
-                   Text="{Binding Password}"
-                   TextColor="{DynamicResource TextColor}"
-                   PlaceholderColor="{DynamicResource TextColorSecondary}"
-                   BackgroundColor="{DynamicResource SurfaceColor}" />
-
-            <Label Text="{Binding Message}"
-                   TextColor="Red" />
-
-            <ActivityIndicator IsRunning="{Binding IsBusy}"
-                               IsVisible="{Binding IsBusy}" />
-
-            <Button Text="{helpers:Translate Key=Login_Button}"
-                    Command="{Binding LoginCommand}"
-                    BackgroundColor="#007AFF"
-                    TextColor="White"
-                    CornerRadius="10"
-                    HeightRequest="50" />
-
-            <Label Text="{helpers:Translate Key=Login_DemoLogin}" 
-                   FontSize="14" 
-                   FontAttributes="Bold" 
-                   HorizontalOptions="Center" 
-                   Margin="0,10,0,5"
-                   TextColor="{DynamicResource TextColor}" />
-
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                <Button Grid.Column="0"
-                        Text="LeonROhrer"
-                        Command="{Binding DemoLoginCommand}"
-                        BackgroundColor="#34C759"
-                        TextColor="White"
-                        CornerRadius="10"
-                        HeightRequest="50" />
+            <!-- Register Link -->
+            <Border BackgroundColor="Transparent"
+                    Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                    StrokeThickness="1"
+                    Padding="20">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12"/>
+                </Border.StrokeShape>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnRegisterClicked" />
+                </Border.GestureRecognizers>
                 
-                <Button Grid.Column="1"
-                        Text="FranzSepp"
-                        Command="{Binding DemoLoginFranzCommand}"
-                        BackgroundColor="#FF9500"
-                        TextColor="White"
-                        CornerRadius="10"
-                        HeightRequest="50" />
-            </Grid>
+                <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                    <Label Text="Noch kein Konto?"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                           FontSize="14"
+                           VerticalOptions="Center" />
+                    <Label Text="{helpers:Translate Key=Login_Register}"
+                           TextColor="{StaticResource Primary}"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Border>
 
-            <Button Text="{helpers:Translate Key=Login_Register}"
-                    Clicked="OnRegisterClicked"
-                    Margin="0,10,0,0"
-                    BackgroundColor="Transparent"
-                    TextColor="#007AFF" />
+            <!-- Bottom Spacing -->
+            <BoxView HeightRequest="20" BackgroundColor="Transparent" />
 
         </VerticalStackLayout>
     </ScrollView>

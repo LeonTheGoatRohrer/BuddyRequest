@@ -138,12 +138,11 @@ namespace Messanger.ViewModels
                     // User-Session speichern
                     UserSession.Login(user);
 
-                    // Navigation zum MainPage FlyoutItem
-                    var shell = Shell.Current;
-                    if (shell.Items.Count > 1)
-                    {
-                        shell.CurrentItem = shell.Items[1]; // MainPage ist Index 1
-                    }
+                    // Flyout-Menü aktivieren
+                    Shell.Current.FlyoutBehavior = FlyoutBehavior.Flyout;
+
+                    // Navigation zur MainPage
+                    await Shell.Current.GoToAsync("///MainPage");
 
                     Username = string.Empty;
                     Password = string.Empty;

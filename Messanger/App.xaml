@@ -2,6 +2,7 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Messanger"
+             xmlns:converters="clr-namespace:Messanger.Converters"
              x:Class="Messanger.App">
     <Application.Resources>
         <ResourceDictionary>
@@ -10,15 +11,18 @@
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- Theme Colors (Standard: Light) -->
-            <Color x:Key="BackgroundColor">#FFFFFF</Color>
-            <Color x:Key="SurfaceColor">#F5F5F5</Color>
-            <Color x:Key="TextColor">#000000</Color>
-            <Color x:Key="TextColorSecondary">#666666</Color>
-            <Color x:Key="BorderColor">#E0E0E0</Color>
-            <Color x:Key="PrimaryColor">#007AFF</Color>
-            <Color x:Key="SecondaryColor">#34C759</Color>
-            <Color x:Key="CardColor">#F5F5F5</Color>
+            <!-- Converters -->
+            <converters:StringToBoolConverter x:Key="StringToBoolConverter" />
+
+            <!-- Theme Colors - Updated to match modern design -->
+            <Color x:Key="BackgroundColor">#F9FAFB</Color>
+            <Color x:Key="SurfaceColor">#F3F4F6</Color>
+            <Color x:Key="TextColor">#111827</Color>
+            <Color x:Key="TextColorSecondary">#6B7280</Color>
+            <Color x:Key="BorderColor">#E5E7EB</Color>
+            <Color x:Key="PrimaryColor">#6366F1</Color>
+            <Color x:Key="SecondaryColor">#8B5CF6</Color>
+            <Color x:Key="CardColor">#FFFFFF</Color>
             <Color x:Key="ButtonTextColor">#FFFFFF</Color>
         </ResourceDictionary>
     </Application.Resources>

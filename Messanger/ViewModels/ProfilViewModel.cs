@@ -220,6 +220,10 @@ namespace Messanger.ViewModels
         private async Task LogoutAsync()
         {
             UserSession.Logout();
+            
+            // Flyout-Menü deaktivieren
+            Shell.Current.FlyoutBehavior = FlyoutBehavior.Disabled;
+            
             await Shell.Current.GoToAsync("///LoginPage");
         }
 

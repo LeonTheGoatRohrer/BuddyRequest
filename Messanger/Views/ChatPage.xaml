@@ -3,52 +3,138 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Messanger.Views.ChatPage"
              Title="{Binding ChatTitle}"
-             BackgroundColor="{DynamicResource BackgroundColor}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource BackgroundDark}}">
     
-    <Grid RowDefinitions="*,Auto" BackgroundColor="{DynamicResource BackgroundColor}">
+    <Grid RowDefinitions="*,Auto">
         
-        <!-- Nachrichten-Liste -->
-        <CollectionView Grid.Row="0"
-                        ItemsSource="{Binding Messages}"
-                        Margin="10"
-                        VerticalOptions="FillAndExpand">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Frame Padding="10" Margin="5" 
-                           BackgroundColor="#007AFF"
-                           CornerRadius="10"
-                           MaximumWidthRequest="300"
-                           HorizontalOptions="End">
-                        <VerticalStackLayout>
-                            <Label Text="{Binding Message}" FontSize="14" TextColor="White" />
-                            <Label Text="{Binding SentAtWithSender}" 
-                                   FontSize="10" 
-                                   TextColor="LightGray" 
-                                   HorizontalOptions="End" />
-                        </VerticalStackLayout>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+        <!-- Nachrichten-Liste mit Hintergrund-Pattern -->
+        <ScrollView Grid.Row="0">
+            <CollectionView ItemsSource="{Binding Messages}"
+                            Margin="16,12"
+                            VerticalOptions="End">
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout Padding="32" Spacing="16" VerticalOptions="Center">
+                        <Label Text="💬"
+                               FontSize="64"
+                               HorizontalOptions="Center" />
+                        <Label Text="Keine Nachrichten"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center" />
+                        <Label Text="Starte eine Unterhaltung"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                               FontSize="14"
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <!-- Message Bubble -->
+                        <Border Padding="8,4"
+                                Margin="0,4"
+                                MaximumWidthRequest="320"
+                                HorizontalOptions="End">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="20,20,4,20"/>
+                            </Border.StrokeShape>
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#6366F1" Offset="0.0" />
+                                    <GradientStop Color="#8B5CF6" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Shadow>
+                                <Shadow Brush="{StaticResource Primary}" 
+                                        Offset="0,3" 
+                                        Radius="8" 
+                                        Opacity="0.3" />
+                            </Border.Shadow>
+                            
+                            <VerticalStackLayout Padding="12,8" Spacing="4">
+                                <Label Text="{Binding Message}" 
+                                       FontSize="15" 
+                                       TextColor="White"
+                                       LineBreakMode="WordWrap" />
+                                <Label Text="{Binding SentAtWithSender}" 
+                                       FontSize="10" 
+                                       TextColor="White" 
+                                       Opacity="0.7"
+                                       HorizontalOptions="End" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </ScrollView>
 
-        <!-- Eingabefeld -->
-        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Padding="10" BackgroundColor="{DynamicResource SurfaceColor}">
-            <Entry Grid.Column="0" 
-                   Text="{Binding MessageText}" 
-                   Placeholder="Nachricht eingeben..." 
-                   VerticalOptions="Center"
-                   TextColor="{DynamicResource TextColor}"
-                   PlaceholderColor="{DynamicResource TextColorSecondary}"
-                   BackgroundColor="{DynamicResource BackgroundColor}" />
-            <Button Grid.Column="1" 
-                    Text="📤" 
-                    Command="{Binding SendMessageCommand}" 
-                    BackgroundColor="#007AFF" 
-                    TextColor="White" 
-                    CornerRadius="20" 
-                    WidthRequest="50" 
-                    HeightRequest="50" 
-                    Margin="10,0,0,0" />
-        </Grid>
+        <!-- Input Area mit modernem Design -->
+        <Border Grid.Row="1" 
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardLight}, Dark={StaticResource CardDark}}"
+                Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"
+                StrokeThickness="1"
+                Padding="12">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0"/>
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="{StaticResource Gray400}" 
+                        Offset="0,-2" 
+                        Radius="8" 
+                        Opacity="0.1" />
+            </Border.Shadow>
+            
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <!-- Message Input -->
+                <Border Grid.Column="0" 
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource SurfaceDark}}"
+                        Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                        StrokeThickness="1"
+                        Padding="16,12"
+                        VerticalOptions="Center">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="24"/>
+                    </Border.StrokeShape>
+                    <Entry Text="{Binding MessageText}" 
+                           Placeholder="Nachricht eingeben..." 
+                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+                           PlaceholderColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                           BackgroundColor="Transparent"
+                           VerticalOptions="Center"
+                           FontSize="15" />
+                </Border>
+                
+                <!-- Send Button -->
+                <Border Grid.Column="1"
+                        WidthRequest="56"
+                        HeightRequest="56"
+                        VerticalOptions="Center"
+                        StrokeThickness="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="28"/>
+                    </Border.StrokeShape>
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#6366F1" Offset="0.0" />
+                            <GradientStop Color="#8B5CF6" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.Shadow>
+                        <Shadow Brush="{StaticResource Primary}" 
+                                Offset="0,4" 
+                                Radius="12" 
+                                Opacity="0.4" />
+                    </Border.Shadow>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SendMessageCommand}" />
+                    </Border.GestureRecognizers>
+                    
+                    <Label Text="📤" 
+                           FontSize="24"
+                           HorizontalOptions="Center" 
+                           VerticalOptions="Center" />
+                </Border>
+            </Grid>
+        </Border>
     </Grid>
 </ContentPage>
